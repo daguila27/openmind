@@ -1,0 +1,60 @@
+
+<!-- jQuery Load -->
+<script src="/assets/js/jquery-3.1.1.min.js"></script>
+<script src="/assets/js/jquery-1.11.3.min.js"></script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+
+<div class="table-responsive" id="tabla_productos">
+    <table class="table table-bordered" id="list_product">
+            <tr id="head">
+              <td><b>Producto</b></td>
+              <td><b>Precio(CLP)</b></td>
+              <td><b>Cantidad</b></td>
+              <td><b>Precio Final</b></td>
+            </tr>
+            <%for(var i=0; i<data.length; i++){
+              if(data[i] != null){%>
+              <tr>
+                <input type="hidden" id="codigoProducto<%=i%>" value="<%=data[i].id_producto%>">
+                <td><%=data[i].nombre%></td>
+                <td>$<%=data[i].precio%><input type="hidden" id="precio<%=i%>" value="<%=data[i].precio%>"></td>
+                
+                <td><input class="cantidad" id="cantidad<%=i%>" type="number" value="<%=data[i].cantidad%>"></td>
+                <td><input type="hidden" class="precioFinal" id="precioFinal<%=i%>"><div id="finalPrice<%=i%>">$<%=data[i].precioFinal%></div></td>
+                <td><div class="delete" id="<%=i%>">
+                      <button class='btn btn-default'>
+                            <span class='glyphicon glyphicon-remove' aria-hidden='true'></span>
+                      </button>
+                </div></td>
+              </tr>
+            <%}}%>  
+            <tr id="head">
+              <input type="hidden" id="precioVenta" value="<%=Costo%>">
+              <td style="display: flex;"><b>Costo: </b>$<div class="costoTotal"><%=Costo%></div></td>
+              
+            </tr>     
+    </table>
+</div>
+<script type="text/javascript">
+        $('.cantidad').on('keyup', function(e){
+            e.preventDefault();
+            var id = $(this).attr('id');
+            var i = id.substring(id.length-1);
+            var cantidad = $(this).val();
+            var codigoProducto = $("#codigoProducto"+i).val();
+            $.ajax({
+              type: 'POST',
+              data: {'id_producto': codigoProducto, 'cantidad': cantidad},
+              url: '/refreshTabla',
+              success: function(data){
+                  var datos = data.split("-");
+                  $("#precioFinal"+i).html("$"+datos[1]);
+                  $(".costoTotal").html(datos[0]);
+              }
+            });
+        });
+
+</script>
+
+

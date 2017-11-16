@@ -1,0 +1,12 @@
+<ul id="container_all_products">
+  <%for(var i=0; i < data.length; i++){%>
+    <li style="display: flex;" class='list-group-item'>
+      	
+      	<div style="width: 33.3%"><h4><b>Nombre: </b><%=data[i].nombre_importacion%></h4></div>
+      	
+      	<div style="width: 33.3%"><h4><b>Cantidad: </b><%=data[i].cantidad_importacion%></h4></div>
+        
+        <div style="width: 33.3%"><h4><b>Precio: </b>$<%=data[i].precio_importacion%></h4></div>
+    </li>
+  <%}%>
+</ul>

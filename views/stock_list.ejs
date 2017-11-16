@@ -1,0 +1,80 @@
+<%if(login_admin){%>
+<%- include layouts/admin_header.ejs %>
+<%}
+else{%>
+	<%- include layouts/user_header.ejs%>
+<%}%>
+<!--<link rel="stylesheet" type="text/css" href="/assets/css/style_list_stock.css">-->
+<script type="text/javascript" src="/assets/js/funciones_stock.js"></script>
+<link rel="stylesheet" type="text/css" href="/assets/css/bootstrap-tagsinput.css">
+<script type="text/javascript" src="/assets/js/bootstrap-tagsinput.js"></script>
+<script type="text/javascript" src="/assets/js/bootstrap-tagsinput-angular.js"></script>
+<h1 class="page-header">Stock:</h1>
+
+<div class="col-md-12">
+	<div class="input-group">
+			  <span class="input-group-addon" id="basic-addon1"></span>
+			  <input type="text" id="CodigoProducto" class="form-control" placeholder="Codigo de barra" aria-describedby="basic-addon1">
+	</div>
+	<form id="formulario_nombre" method="post" action="/buscar_nombre">
+		    <div class="input-group" id="input_tags">
+				<span class="input-group-addon" id="basic-addon1"></span>
+				<input data-role="tagsinput" name="NombreProduct" type="text" class="form-control" placeholder="Nombre(Tags)" aria-describedby="basic-addon1">
+		    </div>
+	</form>
+
+	<div style="width: 100%; margin-bottom: 20px">
+          	<button style="position: relative; margin-left: 93%;margin-top: 10px" type="submit" id="submit" class="btn btn-primary">
+          	<span class='glyphicon glyphicon-search' aria-hidden='true' style="margin-right: 5px"></span>Buscar
+          	</button>
+    </div> 
+	<div class="container_stock"></div>
+</div>
+
+
+<script type="text/javascript">
+  $(document).ready(function(){
+  		$.ajax({
+				type: 'GET',
+		  		url: '/show_product',
+		  		success: function(data){
+		  				$('.container_stock').html(data);
+		  		}
+		});
+  		$('#CodigoProducto').focus();
+
+
+  		$('#submit').on('keyup', function(e){
+  			e.preventDefault();
+  			$('#formulario_nombre').submit();
+  		});
+
+  		$('#CodigoProducto').on('keyup', function(e){
+  			e.preventDefault();
+  			var code = $('#CodigoProducto').val();
+	  		console.log(code);
+	  		if(code.length == 16){
+		  		$.ajax({
+		  			type: 'POST',
+		  			data: {'find_code': code},
+		  			url: '/find_product',
+		  			success: function(data){
+		  				$('.container_stock').html(data);
+		  			}
+		  		});
+	  		}
+	  		else{
+	  			$.ajax({
+		  			type: 'GET',
+		  			url: '/show_product',
+		  			success: function(data){
+		  				$('.container_stock').html(data);
+		  			}
+		  		});
+	  		}
+  		});
+  });
+
+</script>
+
+<%- include layouts/footer.ejs %>
