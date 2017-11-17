@@ -55,48 +55,4 @@
 
 
       $('#PrecioBulto').val(precioBulto);
-      
-      
-      /*$('.barcode').on('click', function(){
-          var idProducto = $(this).attr('id').substring(2);
-          var cant = $("#c"+idProducto).val();
-          var nombre = $('.nombre').val();
-          $.ajax({
-              type: 'POST',
-              data: {'idP': idProducto, 'Cant': cant, 'Nombre': nombre, 'idF': $('#codFactura').val(), 'indice_bulto': $('#thisBundle').val()},
-              url: '/barCodes',
-              success: function(data){
-                  console.log("volvio");
-                  window.open(data);
-              }
-          });
-      });*/
-
-        
-
-      $(".idprod").each(function(){
-        var idproducto = $(this).data("idprod");  
-        console.log(idproducto);
-      });
-
-      $('.precioProd').on('keyup', function(e){
-                e.preventDefault();
-                var gananciaTotal = 0;
-                var precioXproducto =  precioBulto/productosTotales; 
-                var id = $(this).attr('id').substring(1);
-                var ganancia = $("#p"+id).val() - precioXproducto;
-                $('#precioCode'+id).val($("#p"+id).val());
-                
-                $("#g"+id+" b").remove();
-                $("#g"+id).append("<b>$" + parseInt(ganancia) +"</b>");
-          
-                $('#g'+id+' input').val(ganancia);
-                $('.ganancia').each(function(){
-                    gananciaTotal += parseInt($('#'+$(this).attr('id')+' input').val())*parseInt($('#c'+$(this).attr('id').substring(1)).val());
-                });
-
-                $('.ganTotal b').remove();
-                $('.ganTotal').append("<b>$" + parseInt(gananciaTotal) + "</b>");
-                
-          });
 </script>

@@ -1,1 +1,1 @@
-# BelitaBBB
+# Open Mind bazar

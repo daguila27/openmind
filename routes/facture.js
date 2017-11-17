@@ -27,17 +27,17 @@ exports.new_inventory = function(req, res){
 				 				req.session.CantidadBultos = rows[0].Bultos;
 				 				console.log(req.session);
 				 				console.log(ind_bulto);
-				 				connection.query('UPDATE factura SET bulto_pendiente = ' + ind_bulto + ' WHERE id_Factura = ?', [cod_factura], function(err, rows){
+				 				/*connection.query('UPDATE factura SET bulto_pendiente = ' + ind_bulto + ' WHERE id_Factura = ?', [cod_factura], function(err, rows){
 				 							if(err)
 				 								console.log("Error Selecting : %s", err);
-				 				});
-				 				if(ind_bulto == req.session.CantidadBultos ){//YA SE HA INVENTARIADO TODO
+				 				});*/
+				 				/*if(ind_bulto == req.session.CantidadBultos ){//YA SE HA INVENTARIADO TODO
 				 						res.redirect('/saved_facture');
 				 				}
-				 				else{
+				 				else{*/
 				 						res.render('new_inventory', {page_title: 'Nuevo Inventario', data_facture: rows, index_bundle: ind_bulto, allBundle: req.session.CantidadBultos});		
 										
-				 				}
+				 				/*}*/
 						});
 				 				
 				});

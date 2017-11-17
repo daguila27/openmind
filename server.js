@@ -109,7 +109,8 @@ app.post('/find_product_sale', product.findForSale);
 
 app.post('/findProduct', product.findForSale);
 app.get('/stock_list', product.list);
-app.get('/render_table/:id_facture', product.forBundle);
+app.post('/render_table', product.renderTableFactura);
+//app.get('/render_table/:id_facture', product.forBundle);
 app.post('/saveBundle', product.save_bundle);
 app.get('/show_product', product.show);
 app.get('/returns', product.devolucion);

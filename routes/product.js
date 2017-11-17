@@ -52,46 +52,55 @@ exports.new_product = function(req, res){
       var cant = input.cantidad;
       var nombre = input.nombre;
       var precioxunidad = input.precio;
+      var codigo = input.codigo;
       var id_producto;
       req.session.preciobulto = input.precio_bulto;
       var ind_bundle = parseInt(input.indice_bulto);
 	  req.getConnection(function (err, connection) {
 				var dataProduct = {
-					id_producto: input.codigo,
+					id_producto: parseInt(codigo),
 					cantidadTotal:   cant,
-					nombre: 	input.nombre,
+					nombre: 	input.nombre
 				};	
 				var dataProductFacture = {
-					id_producto: input.codigo,
+					id_producto: parseInt(codigo),
 					id_factura:  input.id_factura,
 					precio:   precioxunidad,
 					cantidad:   cant
 				}
-					connection.query('SELECT * FROM producto WHERE id_producto = ?', [input.codigo], function(err, rows){
+                 //INSERT INTO `openmind`.`producto` (`id_producto`, `nombre`, `cantidadtotal`) VALUES ('65465', 'lays', '5');
+
+					console.log("INSERTANDO");
+					console.log(dataProduct);
+					console.log(dataProductFacture);
+					connection.query('SELECT * FROM producto WHERE id_producto = ?', [dataProduct.id_producto], function(err, rows){
 						if(err)
 							console.log("Error Selecting : %s", err);
 						if(rows.length > 0 ){
-
-						connection.query('INSERT INTO productofactura SET ?', [dataProductFacture], function(err, rows){
-							if(err)
-								console.log("Error Selecting : %s", err);
-									connection.query('UPDATE producto SET cantidadTotal = cantidadTotal+'+cant+' WHERE id_producto = ?', codigo,function(err, rows){
-										if(err)
-											console.log("Error Selecting : %s", err);
-							
-										res.redirect('/render_table/'+ input.id_factura );
-
-									});
-						});
-						}
-						else{
+							console.log("Ya  existe el producto");
 							connection.query('INSERT INTO productofactura SET ?', [dataProductFacture], function(err, rows){
 								if(err)
 									console.log("Error Selecting : %s", err);
-									connection.query('INSERT INTO producto SET ?', [dataProduct],function(err, rows){
+										connection.query('UPDATE producto SET cantidadTotal = cantidadTotal+'+cant+' WHERE id_producto = ?', [dataProduct.id_producto],function(err, rows){
+											if(err)
+												console.log("Error Selecting : %s", err);
+								
+											res.redirect('/render_table/'+ input.id_factura );
+
+										});
+							});
+						}
+						else{
+							console.log("NO existe producto");
+							connection.query('INSERT INTO producto SET ?', [dataProduct],function(err, rows){
+								if(err)
+									console.log("Error Selecting : %s", err);
+								
+									connection.query('INSERT INTO productofactura SET ?', [dataProductFacture], function(err, rows){
 									if(err)
 										console.log("Error Selecting : %s", err);
-
+									dataProduct = null;
+									dataProductFacture = null;
 									res.redirect('/render_table/'+ input.id_factura);
 							    
 							    });
@@ -234,34 +243,13 @@ exports.list = function(req, res){
 
 
 
-/*exports.forBundle = function(req, res){
-	var input = req.params;
 
-	req.getConnection(function(err,connection){
-					 connection.query('SELECT * FROM productofactura WHERE id_factura = ?', [input.id_facture, parseInt(input.indice_bulto)] ,function(err,rows)
-						{
-								if(err)
-										console.log("Error Selecting : %s ",err );
-
-								req.session.Productos = rows;
-								console.log("PRODUCTOS EN SESSION:");
-				 				console.log(req.session.Productos);
-									req.session.CantidadTotal = 0;
-									for(var i=0; i<rows.length; i++){
-										if(rows[i].indice_bulto == parseInt(input.indice_bulto)){
-											req.session.CantidadTotal += rows[i].cantidad;
-										}
-									}		
-								res.render('table_products', {thisBundle: req.session.thisBundle, codFactura: req.session.codFactura, datos: rows, Sumcantidad: req.session.CantidadTotal, precioBulto: req.session.preciobulto, nextbundle: req.session.nextBundle});				
-						 });
-				});	
-}*/
 //OUTPUT: 	res.render('table_products', {thisBundle: req.session.thisBundle, codFactura: req.session.codFactura, datos: rows, Sumcantidad: req.session.CantidadTotal, precioBulto: req.session.preciobulto, nextbundle: req.session.nextBundle});				
 exports.forBundle = function(req, res){
 	var input = req.params;
-
+	console.log(req.session.codFactura);
 	req.getConnection(function(err,connection){
-					 connection.query('SELECT * FROM productofactura  LEFT JOIN producto ON productofactura.id_producto = producto.id_producto WHERE id_factura = ?', [input.id_facture] ,function(err,rows)
+					 connection.query('SELECT * FROM productofactura  LEFT JOIN producto ON productofactura.id_producto = producto.id_producto WHERE id_factura = ?', [req.session.codFactura] ,function(err,rows)
 						{
 								if(err)
 										console.log("Error Selecting : %s ",err );
@@ -275,6 +263,27 @@ exports.forBundle = function(req, res){
 						});
 									
 				});	
+}
+
+exports.renderTableFactura = function(req, res){
+	var input = JSON.parse(JSON.stringify(req.body));
+	console.log("Renderizando tabla de productos");
+	console.log(input);
+	req.getConnection(function(err,connection){
+					 connection.query('SELECT * FROM productofactura  LEFT JOIN producto ON productofactura.id_producto = producto.id_producto WHERE id_factura = ?', [input.id_factura] ,function(err,rows)
+						{
+							if(err)
+									console.log("Error Selecting : %s ",err );
+								req.session.CantidadTotal = 0;
+								console.log(rows);
+								for(var i=0; i<rows.length; i++){
+											req.session.CantidadTotal += rows[i].cantidad;
+									}
+									res.render('table_products', {codFactura: req.session.codFactura, datos: rows, Sumcantidad: req.session.CantidadTotal});				
+						 		
+						});
+									
+				});
 }
 
 

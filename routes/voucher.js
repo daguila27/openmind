@@ -28,13 +28,33 @@ exports.generate_voucher = function(req, res){
 										console.log("Error Selecting : %s ",err );
 								
 								providerName = rows[0].Nombre_proveedor;
-								var jre = require('node-jre');
+								/*var jre = require('node-jre');
 								var output = jre.spawnSync(   
 								    ['routes/java'],           
 								    'impresora',                 
 								    [input.costo, input.iva, fecha, providerName, numFactura, total],            
 								    { encoding: 'utf8' }     
-								  ).stdout.trim();
+								  ).stdout.trim();*/
+
+
+
+		 						  /*var printer = require("node-thermal-printer");
+									printer.init({
+									  type: 'epson',
+									  interface: '/dev/usb/lp0'
+									});
+									printer.alignCenter();
+									printer.println("Hello world");
+									printer.printImage('./assets/img/belitaicon.png', function(done){
+									  printer.cut();
+									  printer.execute(function(err){
+									    if (err) {
+									      console.error("Print failed", err);
+									    } else {
+									     console.log("Print done");
+									    }
+									  });
+									});*/
 								res.redirect('/facture_list');
 						 });	
 					
@@ -67,12 +87,31 @@ exports.voucher_sale = function(req, res){
 			}
 		}
 	}
-	var output = jre.spawnSync( 
+	/*var output = jre.spawnSync( 
 	    ['routes/java'],                 
 	    'impresoraSale',                  
 	    [details, Costo, fecha, req.session.codVenta, req.session.nameSeller], 
 	    { encoding: 'utf8' }      
-	  ).stdout.trim();            
+	  ).stdout.trim();*/
+		
+
+		/*var printer = require("node-thermal-printer");
+printer.init({
+  type: 'epson',
+  interface: '/dev/usb/lp0'
+});
+printer.alignCenter();
+printer.println("Hello world");
+printer.printImage('./assets/img/belitaicon.png', function(done){
+  	printer.cut();
+  	printer.execute(function(err){
+	    if (err) {
+	      console.error("Print failed", err);
+	    } else {
+	     console.log("Print done");
+	    }
+	  });
+	});*/
 	console.log(output);
 	console.log(details);
 	console.log(req.session.nameSeller);

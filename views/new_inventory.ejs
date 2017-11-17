@@ -48,18 +48,17 @@
 
 
 <script type="text/javascript">
-  $(document).ready(function(){
                
 
-        //enfocamos en el input de producto
         $('#NombreProduct').focus();
+
+        console.log("Renderzando tabla de factura ");
         $.ajax({
           type: 'GET',
           url: '/render_table/'+$('#idFactura').val(),
           success: function(data){
             $('.tabla').html(data);
           }
-
         });
 
         $('#regist_button').click(function(){
@@ -72,7 +71,8 @@
               var precio = $('#PrecioProduct').val();
               $.ajax({
                     type: 'POST',
-                    data: {'id_factura': id_factura, 'cantidad': cantidad ,'nombre': nombre, 'codigo': codigo, 'precio': precio},
+                    data: {'id_factura': id_factura, 'cantidad': cantidad ,
+                    'nombre': nombre, 'codigo': codigo, 'precio': precio},
                     url: '/new_product',
                     success: function(data){
                         console.log('renderizado');
@@ -81,7 +81,11 @@
                   });
                     
               $('#CantidadProduct').val('');
-              $('.bootstrap-tagsinput input').focus();
+              $('#NombreProduct').val('');
+              $('#CodigoProduct').val('');
+              $('#PrecioProduct').val('');}
+
+              $('#CodigoProduct').focus();
           }
          else{alert("Cantidad máxima de productos: 99");} 
         });
@@ -103,8 +107,6 @@
 
 
        
-
-  })
       
 
 </script>
