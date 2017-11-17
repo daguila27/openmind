@@ -1,0 +1,81 @@
+<%- include layouts/admin_header.ejs %>
+<div class="proveedor">
+  <div style="display: flex;">
+    <h3 style="height: 50px" class="pageheader">Nuevo Inventario: Factura <%=id_factura%></h3>
+    <input type="hidden" id="idfactura" value="<%=id_factura%>">
+  </div>   
+</div>
+
+<div class="input_product">
+        <label>Ingrese Producto:</label>
+        <div class="input-group">
+            <span class="input-group-addon" id="basic-addon1"></span>
+            <input  id="CodigoProduct" type="text" class="form-control" placeholder="Codigo de Barras" aria-describedby="basic-addon1">
+        </div>
+        <div class="input-group">
+		        <span class="input-group-addon" id="basic-addon1"></span>
+		        <input id="NombreProduct" type="text" class="form-control" placeholder="Nombre(Tags)" aria-describedby="basic-addon1">
+    		</div>
+		    <div class="input-group">
+		      <span class="input-group-addon" id="basic-addon1"></span>
+		      <input id="CantidadProduct" type="text" class="form-control" placeholder="Cantidad" aria-describedby="basic-addon1">
+		    </div>
+
+        <div class="input-group">
+          <span class="input-group-addon" id="basic-addon1"></span>
+          <input id="PrecioProduct" type="number" class="form-control" placeholder="Precio por unidad" aria-describedby="basic-addon1">
+        </div>
+        <div style="width: 100%">
+          <button type="button" class="btn btn-success regist_button" style="margin: 10px">Registrar</button>
+        </div>  
+
+</div>
+
+<div class="tabla"></div>
+
+
+<script type="text/javascript">
+	$('#CodigoProduct').focus();
+	$.ajax({
+		type: 'GET',
+		url: '/tabla_factura/'+$("#idfactura").val(),
+		success: function(data){
+			$(".tabla").html(data);
+		}
+	});
+	$(".regist_button").on('click', function(e){
+		e.preventDefault();
+		var id_factura = $("#idfactura").val();
+        var cantidad = $('#CantidadProduct').val();
+        var nombre = $('#NombreProduct').val().toLowerCase();
+        var codigo = $('#CodigoProduct').val();
+        var precio = $('#PrecioProduct').val();
+		$.ajax({
+			type: 'POST',
+			url: '/create_producto',
+			data: {id_factura: id_factura, id_producto: codigo, cantidad: cantidad, nombre: nombre, precio: precio},
+			success: function(data){
+				$(".tabla").html(data);
+			}
+		});
+		$('#CantidadProduct').val('');
+        $('#NombreProduct').val('');
+        $('#CodigoProduct').val('');
+        $('#PrecioProduct').val('');
+		$('#CodigoProduct').focus();	
+	});
+	$("#CodigoProduct").on('keyup', function(e){
+		e.preventDefault();
+		$.ajax({
+			type: 'POST',
+			data: {codigo: $(this).val()},
+			url: '/buscar_info',
+			success: function(data){		
+				if(data != 'error'){
+		        	$('#NombreProduct').val(data.nombre);
+		    	}
+			}
+		});
+	});
+
+</script>

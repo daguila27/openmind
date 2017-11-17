@@ -578,6 +578,8 @@ exports.finish_sale = function(req, res){
 	var RutCliente = input.CodigoCliente;
 	var fecha = new Date();
 	var productos = req.session.saleProducts;
+	console.log("PRODUCTOOOOOS");
+	console.log(productos);
 	var insertId;
 	if(RutVendedor == ''){RutVendedor = 0;}
 	if(RutCliente == ''){RutCliente = 0;}
@@ -607,12 +609,17 @@ exports.finish_sale = function(req, res){
 							console.log("Error Selecting : %s", err);
 
 					});
-					if(productos[i].precioFinal || productos[i].precioFinal == 0){
+					var dataProduct = {
+						id_venta: insertId,
+						codigo_producto: productos[i].id_producto,
+						precio: productos[i].precio,
+						cantidad: productos[i].cantidad
+					};
+					/*if(productos[i].precioFinal || productos[i].precioFinal == 0){
 						var dataProduct = {
 							id_venta: insertId,
 							codigo_producto: productos[i].id_producto,
-							precio: productos[i].precioFinal,
-							id_producto: productos[i].id_producto
+							precio: productos[i].precioFinal 
 						};
 					}
 					else{
@@ -622,7 +629,7 @@ exports.finish_sale = function(req, res){
 							precio: productos[i].precio,
 							id_producto: productos[i].id_producto
 						};
-					}
+					}*/
 					connection.query('INSERT INTO ventaproducto SET ?', dataProduct, function(err, rows){
 						if(err)
 							console.log("Error Selecting : %s", err);
