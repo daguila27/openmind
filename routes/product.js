@@ -101,6 +101,79 @@ exports.new_product = function(req, res){
 
 	});
 }
+exports.buscar_info = function(req, res){
+	var input = JSON.parse(JSON.stringify(req.body));
+	req.getConnection(function(err, connection){
+		connection.query("SELECT * FROM producto WHERE id_producto = ?", [input.codigo], function(err, rows){
+			if(err){console.log("Error Selecting : %s", err);}
+			if(rows.length > 0){
+				res.send(rows[0]);
+			}
+			else{
+				res.send("no");
+			}
+		});
+
+	});
+}
+exports.create_producto = function(req, res){
+	var input = JSON.parse(JSON.stringify(req.body));
+	req.getConnection(function(err, connection){
+		connection.query("SELECT * FROM producto WHERE id_producto = ?", [input.id_producto], function(err, isProducto){
+			if(err){console.log("Error Selecting : %s", err);}
+			if(isProducto.length > 0){
+				var dataPF = {
+					id_producto: input.id_producto,
+					id_factura: input.id_factura,
+					precio: input.precio,
+					cantidad: input.cantidad
+				};
+
+				connection.query("UPDATE producto SET cantidadtotal += ? WHERE id_producto = ?", [input.cantidad, input.id_producto],function(err, rows){
+					if(err){console.log("Error Selecting : %s", err);}
+					connection.query("INSERT INTO productofactura SET ?", [dataPF] ,function(err, rows){});
+						if(err){console.log("Error Selecting : %s", err);}
+						res.redirect("/tabla_factura/"+input.id_factura);
+				});
+			}
+			else{
+				var dataPF = {
+					id_producto: input.id_producto,
+					id_factura: input.id_factura,
+					precio: input.precio,
+					cantidad: input.cantidad
+				};
+
+				var dataP = {
+					id_producto: input.id_producto,
+					nombre: input.nombre,
+					cantidadtotal: input.cantidad 
+				};
+				connection.query("INSERT INTO producto SET ?", [dataP],function(err, rows){
+					if(err){console.log("Error Selecting : %s", err);}
+					connection.query("INSERT INTO productofactura SET ?", [dataPF] ,function(err, rows){});
+						if(err){console.log("Error Selecting : %s", err);}
+						res.redirect("/tabla_factura/"+input.id_factura);
+				});
+			}	
+		});
+	});
+}
+exports.eraseProduct = function(req, res){
+	var input = JSON.parse(JSON.stringify(req.body));
+	var id_factura = input.id_factura;
+	var id_producto = input.id_producto;
+	var cantidad = input.cantidad;
+	req.getConnection(function(err, connection){
+		connection.query('DELETE FROM productofactura WHERE id_factura = ? AND id_producto = ?', [id_factura, id_producto],function(err, prodfact){
+			if(err){console.log("Error Selecting : %s", err);}
+			connection.query("UPDATE producto SET cantidadtotal -= ? WHERE id_producto = ?", [cantidad, id_producto], function(err, update){
+				if(err){console.log("Error Selecting : %s", err);}
+				res.redirect("/tabla_factura/"+id_factura);
+			});
+		});
+	});
+}
 
 
 function UpperWord(word){

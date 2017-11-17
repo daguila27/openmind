@@ -94,12 +94,24 @@ app.post('/next_step', facture.next);
 app.get('/delete_all_facture', facture.delete_all);
 app.get('/table_facture', facture.table_render);
 
+
+
+app.post('/make_inventory', facture.make_inventory);
+app.get('/tabla_factura/:id_factura', facture.tabla_factura);
+app.post('/guardar_factura', facture.saveFactura);
+
+
 app.post('/details_factura', facture.details);
 app.get("/new_facture", facture.new_voucher);
 
 
 app.get("/voucher_sale", voucher.voucher_sale);
 app.post("/generate_voucher", voucher.generate_voucher);
+
+
+app.post("/delete_producto", product.eraseProduct);
+app.post("/create_producto", product.create_producto);
+app.post("/buscar_info", product.buscar_info);
 
 
 app.post('/new_product', product.new_product);

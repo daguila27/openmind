@@ -1,3 +1,34 @@
+exports.make_inventory = function(req, res){
+	var idFactura = JSON.parse(JSON.stringify(req.body)).idFactura;
+	req.getConnection(function(err, connection){
+		var query = connection.query("SELECT * FROM factura WHERE id_factura = ?", idFactura, function(err, rows){
+			if(err)
+				console.log("Error inserting: %s", err);
+			res.render('make_inventory', {page_title: "Nueva Factura", data:rows, id_factura: idFactura});
+		}); 
+	});
+}
+
+exports.tabla_factura = function(req, res){
+	var id_factura = req.params.id_factura;
+	req.getConnection(function(err, connection){
+		var query = connection.query("SELECT * FROM productofactura RIGHT JOIN producto ON productofactura.id_producto = producto.id_producto WHERE productofactura.id_factura = ?", [id_factura], function(err, rows){
+			if(err)
+				console.log("Error inserting: %s", err);
+			res.render('tabla_factura', {page_title: "Nueva Factura", data:rows, id_factura: id_factura});
+		}); 
+	});
+}
+ exports.saveFactura = function(req, res){
+ 	var id_factura = JSON.parse(JSON.stringify(req.body)).id_Factura;
+ 	req.getConnection(function(err, connection){
+	 		connection.query("UPDATE factura SET Ready = 1 WHERE id_factura = ?",[id_factura], function(err, rows){
+	 			if(err){console.log("Error Selecting : %s", err);}
+	 			res.redirect('/facture_list');
+	 		});
+ 	});
+ }
+
 exports.new_voucher = function(req, res){
 	req.getConnection(function(err, connection){
 		var query = connection.query("SELECT * FROM proveedor", function(err, rows){
