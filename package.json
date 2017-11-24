@@ -20,6 +20,8 @@
     "jsreport": "^1.8.2",
     "mysql": "2.2.0",
     "node-jre": "^0.2.1",
+    "node-printer": "^1.0.2",
+    "node-thermal-printer": "^1.1.1",
     "npos": "^0.1.18",
     "passport": "^0.3.2"
   }

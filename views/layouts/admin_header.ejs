@@ -140,9 +140,10 @@
             </ul>
         </div>
         <script type="text/javascript">
-                $(".menu").hover(function(){
+                $(".menu").hover(function(e){
+                    e.preventDefault();
                     var id = $(this).attr('id');
-                    console.log($('#drop-'+id).data('items'));
+                    //console.log($('#drop-'+id).data('items'));
                     var num = $('#drop-'+id).data('items');
                     var height = num*35;
                     $('#drop-'+id).css("height", height+"px");

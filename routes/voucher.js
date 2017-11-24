@@ -2,6 +2,7 @@
 
 exports.generate_voucher = function(req, res){
 	var input = JSON.parse(JSON.stringify(req.body));
+	console.log(input);
 	var f = new Date();
 	var providerName = "";
 	var total = parseInt(input.costo) + (parseInt(input.iva)/100)*parseInt(input.costo);
@@ -10,6 +11,7 @@ exports.generate_voucher = function(req, res){
 
 		req.getConnection(function (err, connection) {
 				var data = {
+					numFactura: input.numfactura,
 					Fecha 	: f,
 					Costo   : input.costo,
 					Iva		: input.iva,
@@ -36,25 +38,35 @@ exports.generate_voucher = function(req, res){
 								    { encoding: 'utf8' }     
 								  ).stdout.trim();*/
 
-
-
-		 						  /*var printer = require("node-thermal-printer");
-									printer.init({
-									  type: 'epson',
-									  interface: '/dev/usb/lp0'
-									});
-									printer.alignCenter();
-									printer.println("Hello world");
-									printer.printImage('./assets/img/belitaicon.png', function(done){
-									  printer.cut();
-									  printer.execute(function(err){
+								var printer = require("node-thermal-printer");
+								printer.init({
+								  type: 'epson',
+								  interface: '/dev/usb/lp0'
+								});
+								console.log(printer);
+								printer.alignCenter();
+								printer.setTextDoubleHeight();
+								printer.setTextDoubleWidth();
+								printer.println("Minimarket Rico Pan");
+								printer.println("Factura #"+input.numfactura);
+								printer.println("\n");
+								printer.alignLeft();
+								printer.setTextNormal();
+								printer.println("  Proveedor: "+providerName);
+								printer.println("  Fecha y Hora: "+fecha);
+								printer.println("  Costo:  $"+input.costo);
+								printer.println("  IVA:  %"+input.iva);
+								printer.println("Total: $"+total);
+								printer.printImage('./assets/img/belitaicon.png', function(done){
+								  	printer.cut();
+								  	printer.execute(function(err){
 									    if (err) {
 									      console.error("Print failed", err);
 									    } else {
 									     console.log("Print done");
 									    }
 									  });
-									});*/
+									});
 								res.redirect('/facture_list');
 						 });	
 					
@@ -68,7 +80,6 @@ exports.voucher_sale = function(req, res){
 	var detalles = req.session.saleProducts;
 	var Costo = req.session.CostoTotal;
 	var details = ""; 
-	var jre = require('node-jre');
 	var f = new Date();
 	var fecha = f.getDate()+"/"+f.getMonth()+"/"+f.getFullYear()+" "+f.getHours()+":"+f.getMinutes()+":"+f.getSeconds();
 	
@@ -87,34 +98,67 @@ exports.voucher_sale = function(req, res){
 			}
 		}
 	}
-	/*var output = jre.spawnSync( 
-	    ['routes/java'],                 
-	    'impresoraSale',                  
-	    [details, Costo, fecha, req.session.codVenta, req.session.nameSeller], 
-	    { encoding: 'utf8' }      
-	  ).stdout.trim();*/
-		
+	console.log(req.session);
+	var printer = require("node-thermal-printer");
+								printer.init({
+								  type: 'epson',
+								  interface: '/dev/usb/lp0'
+								});
+								console.log(printer);
+								printer.alignCenter();
+								printer.setTextDoubleHeight();
+								printer.setTextDoubleWidth();
+								printer.println("Minimarket Rico Pan");
 
-		/*var printer = require("node-thermal-printer");
-printer.init({
-  type: 'epson',
-  interface: '/dev/usb/lp0'
-});
-printer.alignCenter();
-printer.println("Hello world");
-printer.printImage('./assets/img/belitaicon.png', function(done){
-  	printer.cut();
-  	printer.execute(function(err){
-	    if (err) {
-	      console.error("Print failed", err);
-	    } else {
-	     console.log("Print done");
-	    }
-	  });
-	});*/
-	console.log(output);
-	console.log(details);
-	console.log(req.session.nameSeller);
+								printer.println("Venta #"+666);
+								printer.println("\n");
+								printer.alignLeft();
+								printer.setTextNormal();
+								printer.println(details);
+								printer.println("  Total:             $"+req.session.CostoTotal);
+							    printer.println("  Vendedor: "+req.session.nameSeller);
+								printer.println("  Fecha y Hora: "+fecha);
+								printer.printImage('./assets/img/belitaicon.png', function(done){
+								  	printer.cut();
+								  	printer.execute(function(err){
+									    if (err) {
+									      console.error("Print failed", err);
+									    } else {
+									     console.log("Print done");
+									    }
+									  });
+									});
+	res.redirect('/new_sale');	
+}
+
+exports.testprinter = function(req, res){
+		var printer = require("node-thermal-printer");
+								printer.init({
+								  type: 'epson',
+								  interface: '/dev/usb/lp0'
+								});
+								console.log(printer);
+								printer.alignCenter();
+								printer.println("Open Mind");
+
+								printer.println("Factura #"+666);
+								printer.println("\n");
+								printer.alignLeft();
+								printer.println("  Proveedor: "+"providerName");
+								printer.println("  Fecha y Hora: "+"10/10/10 10:10:10");
+								printer.println("  Costo:  $"+100000);
+								printer.println("  IVA:  %"+19);
+								printer.println("  Total: $"+119000);
+								printer.printImage('./assets/img/belitaicon.png', function(done){
+								  	printer.cut();
+								  	printer.execute(function(err){
+									    if (err) {
+									      console.error("Print failed", err);
+									    } else {
+									     console.log("Print done");
+									    }
+									  });
+									});
 	res.redirect('/new_sale');	
 }
 

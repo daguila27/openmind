@@ -137,8 +137,9 @@ exports.create_producto = function(req, res){
 					precio: input.precio,
 					cantidad: input.cantidad
 				};
-
-				connection.query("UPDATE producto SET cantidadtotal += ? WHERE id_producto = ?", [input.cantidad, input.id_producto],function(err, rows){
+				console.log("Ingresando datos del producto");
+				console.log(dataPF);
+				connection.query("UPDATE producto SET cantidadtotal = cantidadtotal + ? WHERE id_producto = ?", [input.cantidad, input.id_producto],function(err, rows){
 					if(err){console.log("Error Selecting : %s", err);}
 					connection.query("INSERT INTO productofactura SET ?", [dataPF] ,function(err, rows){});
 						if(err){console.log("Error Selecting : %s", err);}
@@ -158,11 +159,18 @@ exports.create_producto = function(req, res){
 					nombre: input.nombre,
 					cantidadtotal: input.cantidad 
 				};
-				connection.query("INSERT INTO producto SET ?", [dataP],function(err, rows){
+
+				console.log("Ingresando datos del producto");
+				console.log(dataPF);
+				console.log(dataP);
+				var query1 = "INSERT INTO producto (id_producto, nombre, cantidadtotal) VALUES ('"+dataP.id_producto+"','"+ dataP.nombre+"','"+ dataP.cantidadtotal+"')";
+				console.log(query1);
+				connection.query(query1,function(err, rows){
 					if(err){console.log("Error Selecting : %s", err);}
-					connection.query("INSERT INTO productofactura SET ?", [dataPF] ,function(err, rows){});
+					connection.query("INSERT INTO productofactura (id_producto, id_factura, precio, cantidad) VALUES (?, ?, ?, ?)", [dataPF.id_producto, dataPF.id_factura, dataPF.precio, dataPF.cantidad] ,function(err, rows){
 						if(err){console.log("Error Selecting : %s", err);}
 						res.redirect("/tabla_factura/"+input.id_factura);
+					});		
 				});
 			}	
 		});
@@ -176,7 +184,7 @@ exports.eraseProduct = function(req, res){
 	req.getConnection(function(err, connection){
 		connection.query('DELETE FROM productofactura WHERE id_factura = ? AND id_producto = ?', [id_factura, id_producto],function(err, prodfact){
 			if(err){console.log("Error Selecting : %s", err);}
-			connection.query("UPDATE producto SET cantidadtotal -= ? WHERE id_producto = ?", [cantidad, id_producto], function(err, update){
+			connection.query("UPDATE producto SET cantidadtotal = cantidadtotal - ? WHERE id_producto = ?", [cantidad, id_producto], function(err, update){
 				if(err){console.log("Error Selecting : %s", err);}
 				res.redirect("/tabla_factura/"+id_factura);
 			});

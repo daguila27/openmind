@@ -109,6 +109,8 @@ else{%>
 							success: function(data){
 								$('.container_list').html(data);
 								$('#CodigoProduct').prop('disabled', false);
+								$('#CodigoProduct').val("");
+								$('#CodigoProduct').focus();
 							}
 						});
 					}

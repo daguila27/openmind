@@ -17,7 +17,7 @@ public class impresoraSale {
 				//dispositivo = misession.impresora_tiquets();
 				//if(dispositivo.trim().length()<=0){
 					//if(misession.isWindows()){
-						dispositivo="COM3";//Esto si  es windows
+						dispositivo="/dev/usb/lp0";//Esto si  es windows
 					//}
 					//else{
 						//dispositivo="/dev/lp0";//Esto si  es linux

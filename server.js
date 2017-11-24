@@ -107,6 +107,9 @@ app.get("/new_facture", facture.new_voucher);
 
 app.get("/voucher_sale", voucher.voucher_sale);
 app.post("/generate_voucher", voucher.generate_voucher);
+app.get("/testprinter", voucher.testprinter);
+
+
 
 
 app.post("/delete_producto", product.eraseProduct);

@@ -17,7 +17,7 @@ public class impresora {
 				//dispositivo = misession.impresora_tiquets();
 				//if(dispositivo.trim().length()<=0){
 					//if(misession.isWindows()){
-						dispositivo="COM3";//Esto si  es windows
+						dispositivo="/dev/usb/lp0";//Esto si  es windows
 					//}
 					//else{
 						//dispositivo="/dev/lp0";//Esto si  es linux
@@ -152,9 +152,8 @@ public class impresora {
 			p.setTipoCaracterLatino();
 			p.setFormato(17);
 			p.escribir("Factura #"+args[4]);
-			p.escribir("");
 			p.setFormato(54);
-			p.escribir("Belita 3B");
+			p.escribir("Open Mind");
 			p.escribir("");
 			p.setFormato(1);
 			p.escribir("----------------------------------------------------------------");

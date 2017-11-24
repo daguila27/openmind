@@ -600,15 +600,16 @@ exports.finish_sale = function(req, res){
 			
 			for(var i=0; i<productos.length; i++){
 				if(productos[i] != null){
-					connection.query('UPDATE producto SET cantidadtotal = cantidadtotal - 1 WHERE id_producto = ?', [productos[i].id_producto], function(err, rows){
-						if(err)
+					connection.query('UPDATE producto SET cantidadtotal = cantidadtotal - ? WHERE id_producto = ?', [productos[i].cantidad, productos[i].id_producto], function(err, rows){
+						if(err){
 							console.log("Error Selecting : %s", err);
+						}
 					});
-					connection.query('UPDATE productofactura SET cantidad = cantidad - 1 WHERE id_producto = ? AND id_factura = ? AND indice_bulto = ?', [productos[i].id_producto, productos[i].id_factura, productos[i].indice_bulto], function(err, rows){
+					/*connection.query('UPDATE productofactura SET cantidad = cantidad - ? WHERE id_producto = ? AND id_factura = ?', [productos[i].cantidad, productos[i].id_producto, productos[i].id_factura], function(err, rows){
 						if(err)
 							console.log("Error Selecting : %s", err);
 
-					});
+					});*/
 					var dataProduct = {
 						id_venta: insertId,
 						codigo_producto: productos[i].id_producto,
@@ -662,7 +663,7 @@ exports.estadisticasxproducto = function(req, res){
 exports.estadisticas = function(req, res){
 	var datosVendedor; 
     req.getConnection(function(err, connection){
-        connection.query('select * from venta right join vendedor on (venta.rut_vendedor = vendedor.rutVendedor) left join cliente on (venta.rut_cliente = cliente.rutCliente)', function(err, rows){
+        connection.query('select * from venta right join vendedor on (venta.rut_vendedor = vendedor.rutVendedor) left join cliente on (venta.rut_cliente = cliente.rut)', function(err, rows){
             if(err)
                 console.log("Error Selecting : %s", err);
             res.render('estadisticas_ventas', {page_title: 'Estadisticas de Ventas', data: rows});
@@ -678,7 +679,7 @@ exports.estadisticas = function(req, res){
 
 exports.details = function(req, res){
 	req.getConnection(function(err, connection){
-		connection.query('select * from venta left join vendedor on (venta.rut_vendedor = vendedor.rutVendedor) left join cliente on (venta.rut_cliente = cliente.rutCliente)', function(err, rows){
+		connection.query('select * from venta left join vendedor on (venta.rut_vendedor = vendedor.rutVendedor) left join cliente on (venta.rut_cliente = cliente.rut)', function(err, rows){
 			if(err)
 				console.log("Error Selecting : %s", err);
 			console.log(rows);
@@ -745,7 +746,7 @@ exports.tableDate = function(req, res){
 			if(i != 0){fecha += "-";}
 		}
 		req.getConnection(function(err, connection){
-			connection.query("select * from venta right join vendedor on (venta.rut_vendedor = vendedor.rutVendedor) left join cliente on (venta.rut_cliente = cliente.rutCliente)  where venta.fecha like '"+fecha+"%'", function(err, rows){
+			connection.query("select * from venta right join vendedor on (venta.rut_vendedor = vendedor.rutVendedor) left join cliente on (venta.rut_cliente = cliente.rut)  where venta.fecha like '"+fecha+"%'", function(err, rows){
 				if(err){
 					console.log("Error Selecting : %s", err);
 				}
@@ -757,7 +758,7 @@ exports.tableDate = function(req, res){
 exports.find = function(req, res){
 	var input = JSON.parse(JSON.stringify(req.body));
 	req.getConnection(function(err, connection){
-		connection.query('select * from venta right join vendedor on (venta.rut_vendedor = vendedor.rutVendedor) left join cliente on (venta.rut_cliente = cliente.rutCliente) where venta.id_venta = ?', [input.codVenta], function(err, rows){
+		connection.query('select * from venta right join vendedor on (venta.rut_vendedor = vendedor.rutVendedor) left join cliente on (venta.rut_cliente = cliente.rut) where venta.id_venta = ?', [input.codVenta], function(err, rows){
 			if(err)
 				console.log("Error Selecting : %s", err);
 			console.log(rows);
