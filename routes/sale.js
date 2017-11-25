@@ -25,6 +25,7 @@ exports.refresh = function(req, res){
 	res.render('costo', {costo: req.session.CostoTotal});
 }
 exports.sale = function(req, res){
+	console.log("RENDERIZANDO VENTA");
 	console.log(req.session.saleProducts);
 	console.log(req.session.CostoTotal);
 	res.render('sale_table', {data: req.session.saleProducts, Costo: req.session.CostoTotal});
@@ -84,8 +85,9 @@ function igual(array1, array2){
 
 exports.check = function(req, res){
 	var input = JSON.parse(JSON.stringify(req.body));
+	console.log(input);
 	req.getConnection(function(err, connection){
-		connection.query("SELECT * FROM productofactura WHERE id_producto = ?", [input.codigo], function(err, rows){
+		connection.query("SELECT * FROM producto WHERE id_producto = ?", [input.codigo], function(err, rows){
 			if(err)
 				console.log("Error Selecting : %s", err);
 			if(rows.length > 0){res.send("ok");}
@@ -111,7 +113,9 @@ exports.add_product = function(req, res){
 	var input = JSON.parse(JSON.stringify(req.body));
 	var codigo = input.codigo;
 	req.getConnection(function(err, connection){
-		connection.query("SELECT * FROM productofactura RIGHT JOIN producto ON (productofactura.id_producto = producto.id_producto) WHERE productofactura.id_producto = ?", [codigo], function(err, rows){
+		//connection.query("SELECT * FROM productofactura RIGHT JOIN producto ON (productofactura.id_producto = producto.id_producto) WHERE productofactura.id_producto = ?", [codigo], function(err, rows){
+		connection.query("SELECT * FROM producto WHERE id_producto = ?", [codigo], function(err, rows){
+		
 			if(err)
 				console.log("Error Selecting : %s", err);
 			if(rows.length>0){
@@ -121,11 +125,11 @@ exports.add_product = function(req, res){
 					req.session.saleProducts[0] = {
 						id_producto: codigo,
 						nombre: rows[0].nombre,
-						precio: rows[0].precio,
+						precio: rows[0].precioactual,
 						cantidad: 1,
-						precioFinal: rows[0].precio
+						precioFinal: rows[0].precioactual
 					};
-					req.session.CostoTotal += rows[0].precio;
+					req.session.CostoTotal += rows[0].precioactual;
 					res.redirect('/render_sale');
 				}
 				else{
@@ -133,8 +137,8 @@ exports.add_product = function(req, res){
 						if(aux[i] != null){
 							if(aux[i].id_producto == rows[0].id_producto){
 								req.session.saleProducts[i].cantidad += 1;
-								req.session.saleProducts[i].precioFinal += rows[0].precio;
-								req.session.CostoTotal += rows[0].precio;
+								req.session.saleProducts[i].precioFinal += rows[0].precioactual;
+								req.session.CostoTotal += rows[0].precioactual;
 								res.redirect('/render_sale');
 								break;
 							}
@@ -145,12 +149,12 @@ exports.add_product = function(req, res){
 								var data = {
 									id_producto: codigo,
 									nombre: rows[0].nombre,
-									precio: rows[0].precio,
+									precio: rows[0].precioactual,
 									cantidad: 1,
-									precioFinal: rows[0].precio
+									precioFinal: rows[0].precioactual
 								}
 								req.session.saleProducts[i+1] = data;
-								req.session.CostoTotal += rows[0].precio;
+								req.session.CostoTotal += rows[0].precioactual;
 								res.redirect('/render_sale');
 								break;
 							}	

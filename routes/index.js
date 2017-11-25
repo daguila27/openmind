@@ -25,6 +25,61 @@ exports.changePass = function(req, res){
 
 
 
+
+
+
+exports.setPrecio = function(req, res){
+	req.session.prod = [];
+	req.getConnection(function(err, connection){
+		connection.query("SELECT * FROM producto", function(err, productos){
+			if(err){console.log("Error Selecting: %s", err);}
+			req.session.prod = productos;
+			res.redirect('/setPrecioB');
+		});
+	});
+
+}
+
+
+exports.setPrecioB = function(req, res){
+	//console.log(req.session.prod);
+	req.getConnection(function(err, connection){
+			insertPrecio(connection, 0, req.session.prod, res);
+	});
+}
+
+function insertPrecio(connection, indice, productos, res){
+	connection.query("SELECT * FROM productofactura WHERE id_producto = ?", [productos[indice].id_producto], function(err, producto){
+		if(err){console.log("Error Selecting :%s", err);}
+			if(producto.length > 0){
+				var codigo = producto[producto.length-1].id_producto;
+				var precio = producto[producto.length-1].precio
+				console.log("CODIGO: "+codigo);
+				console.log("Precio: "+precio);
+				connection.query("UPDATE producto SET precioactual = ? WHERE id_producto = ?", [precio, codigo],function(err, update){
+					if(err){console.log("Error Selecting :%s", err);}
+					if(indice == productos.length-1){
+						res.redirect("/");
+					}
+					else{
+						indice = indice + 1;
+						insertPrecio(connection, indice, productos, res);
+					}
+				});
+			}
+			else{
+				if(indice == productos.length-1){
+					res.redirect("/");
+				}
+				else{
+					indice = indice + 1;
+					insertPrecio(connection, indice, productos, res);
+				}
+			}
+	});
+}
+
+
 /*var jre = require('node-jre');
  
 	var output = jre.spawnSync(  // call synchronously 

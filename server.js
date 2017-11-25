@@ -74,6 +74,8 @@ app.post('/barCodes', index.codes);
 app.post('/rutCodes', index.rutCodes);
 app.get('/admin_login', index.to_login);
 app.get('/changePass', index.changePass);
+app.get('/setPrecio', index.setPrecio);
+app.get('/setPrecioB', index.setPrecioB);
 
 
 
@@ -110,6 +112,9 @@ app.post("/generate_voucher", voucher.generate_voucher);
 app.get("/testprinter", voucher.testprinter);
 
 
+
+
+//app.get("/search_producto/:codigo", product.searchProducto);
 
 
 app.post("/delete_producto", product.eraseProduct);

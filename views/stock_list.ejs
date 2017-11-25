@@ -4,12 +4,14 @@
 else{%>
 	<%- include layouts/user_header.ejs%>
 <%}%>
-<!--<link rel="stylesheet" type="text/css" href="/assets/css/style_list_stock.css">-->
-<script type="text/javascript" src="/assets/js/funciones_stock.js"></script>
-<link rel="stylesheet" type="text/css" href="/assets/css/bootstrap-tagsinput.css">
-<script type="text/javascript" src="/assets/js/bootstrap-tagsinput.js"></script>
-<script type="text/javascript" src="/assets/js/bootstrap-tagsinput-angular.js"></script>
+
+
+
+
+
 <h1 class="page-header">Stock:</h1>
+
+
 
 <div class="col-md-12">
 	<div class="input-group">
@@ -17,9 +19,9 @@ else{%>
 			  <input type="text" id="CodigoProducto" class="form-control" placeholder="Codigo de barra" aria-describedby="basic-addon1">
 	</div>
 	<form id="formulario_nombre" method="post" action="/buscar_nombre">
-		    <div class="input-group" id="input_tags">
+		    <div class="input-group">
 				<span class="input-group-addon" id="basic-addon1"></span>
-				<input data-role="tagsinput" name="NombreProduct" type="text" class="form-control" placeholder="Nombre(Tags)" aria-describedby="basic-addon1">
+				<input name="NombreProduct" type="text" class="form-control" placeholder="Nombre del producto" aria-describedby="basic-addon1">
 		    </div>
 	</form>
 

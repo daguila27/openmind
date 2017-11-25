@@ -46,6 +46,8 @@
 				});
 		});
 }*/
+
+
 exports.new_product = function(req, res){
       var input = JSON.parse(JSON.stringify(req.body));
       console.log(input);
@@ -141,9 +143,12 @@ exports.create_producto = function(req, res){
 				console.log(dataPF);
 				connection.query("UPDATE producto SET cantidadtotal = cantidadtotal + ? WHERE id_producto = ?", [input.cantidad, input.id_producto],function(err, rows){
 					if(err){console.log("Error Selecting : %s", err);}
-					connection.query("INSERT INTO productofactura SET ?", [dataPF] ,function(err, rows){});
+					connection.query("UPDATE producto SET precioactual = ? WHERE id_producto = ?",[input.precio, input.id_producto], function(err, rows){
 						if(err){console.log("Error Selecting : %s", err);}
-						res.redirect("/tabla_factura/"+input.id_factura);
+						connection.query("INSERT INTO productofactura SET ?", [dataPF] ,function(err, rows){});
+							if(err){console.log("Error Selecting : %s", err);}
+							res.redirect("/tabla_factura/"+input.id_factura);
+					});
 				});
 			}
 			else{
@@ -309,7 +314,7 @@ exports.show = function(req, res){
 						{
 								if(err)
 										console.log("Error Selecting : %s ",err );
-								console.log(rows);	
+								//console.log(rows);	
 								res.render('stock_table', {data: rows});				
 						 });
 				});
