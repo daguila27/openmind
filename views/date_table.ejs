@@ -62,7 +62,7 @@ else{%>
       var top = 110 + position*90;
       $.ajax({
         type: 'POST',
-        data: {'codVenta': $('#'+id+' #codVenta').val(),'type': $('#'+id+' #type').val()},
+        data: {'codVenta': id,'type': $('#'+id+' #type').val()},
         url: '/find_sale',
         success: function(data){
             $('.container').html(data);

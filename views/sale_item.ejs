@@ -30,19 +30,18 @@ else{
               <%}%>
           </li>
     </ul>
+    <ul id="container_provider">
+    <%for(var i=0; i< data.length; i++){%>
+        <li class="list-group-item">
+          <div class="dib">
+                <h5><b>Nombre del producto: </b>  <%=data[i].nombre%></h5>     
+          </div>
+          <div class="dib">
+                <h5><b>Cantidad: </b><%=data[i].cantidad%></h5>
+                <h5><b>Precio venta:</b> $<%=data[i].precio%></h5>
+          </div>
+        </li>
 
-
-    <ul id="container_product">
+    <%}%>
     </ul>
-
-    <script type="text/javascript">
-      $.ajax({
-        type: 'POST',
-        data: {'idVenta': $('#idVenta').val(), 'type': $('#type').val()},
-        url: '/colect_product',
-        success: function(data){
-            $('#container_product').html(data);
-        }
-      });
-    </script>
 <%}%>
