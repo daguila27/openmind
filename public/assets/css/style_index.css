@@ -5,7 +5,7 @@ body{
 	position: relative;
 	padding: 10px;
 	border-radius: 5%;
-	background-color: rgb(7, 30, 53);
+	background-color: white;
 	width: 50%;
 }
 .buttons{
@@ -17,5 +17,4 @@ body{
 #logo{
             height: 350px;
             width: 100%;
-            background-image: url('/assets/img/belitadark.png');
         }

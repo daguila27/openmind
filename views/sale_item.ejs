@@ -33,12 +33,12 @@ else{
     <ul id="container_provider">
     <%for(var i=0; i< data.length; i++){%>
         <li class="list-group-item">
-          <div class="dib">
-                <h5><b>Nombre del producto: </b>  <%=data[i].nombre%></h5>     
+          <div style="width: 70%;">
+                <h4><b>Nombre del producto: </b>  <%=data[i].nombre%></h4>     
           </div>
-          <div class="dib">
-                <h5><b>Cantidad: </b><%=data[i].cantidad%></h5>
-                <h5><b>Precio venta:</b> $<%=data[i].precio%></h5>
+          <div style="width: 30%;">
+                <h4><b>Cantidad: </b><%=data[i].cantidad%></h4>
+                <h4><b>Precio venta:</b> $<%=data[i].precio%></h4>
           </div>
         </li>
 
