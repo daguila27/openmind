@@ -75,7 +75,7 @@ exports.details = function(req, res){
 			if(err)
 				console.log("Error Selecting : %s", err);
 			console.log(rows);
-			res.render('sale_seller_details', {page_title: 'Detalles de ventas', data: rows});
+			res.render('sale_seller_details', {page_title: 'Detalles de ventas', data: rows, login_admin: req.session.login_admin});
 
 		});
 	});

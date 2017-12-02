@@ -1,4 +1,10 @@
-<%- include layouts/admin_header.ejs %>
+
+<%if(login_admin){%>
+  <%- include layouts/admin_header.ejs %>
+<%}
+else{%>
+  <%- include layouts/user_header.ejs%>
+<%}%>
 
 <h1 class="page-header">Datos de ventas:</h1>
 <link rel="stylesheet" type="text/css" href="/assets/css/style_providers.css">
@@ -8,7 +14,7 @@
 <h4 style="height: 50px">Filtrar:</h4>
   <select style="height: 50px; width: 50%; margin-right: 20px; margin-left: 20px" id="filtro" class="form-control" style="width: 200px; display:block; margin:15px" onchange="cambiar()">
     <option value="Todas">Todas la ventas</option>
-    <option value="Vendedor">Ventas por Vendedor</option>
+    <option value="Vendedor">Ventas por Turno</option>
     <option value="Fecha">Ventas por fecha</option>    
   </select>
   <!--<input  style="height: 50px" class="btn btn-primary" type="button" value="Filtrar" id="filtro_button">-->

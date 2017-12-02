@@ -670,7 +670,7 @@ exports.estadisticas = function(req, res){
         connection.query('select * from venta right join vendedor on (venta.rut_vendedor = vendedor.rutVendedor) left join cliente on (venta.rut_cliente = cliente.rut)', function(err, rows){
             if(err)
                 console.log("Error Selecting : %s", err);*/
-            res.render('estadisticas_ventas', {page_title: 'Estadisticas de Ventas'});
+            res.render('estadisticas_ventas', {page_title: 'Estadisticas de Ventas',  login_admin: req.session.login_admin });
 
         /*});
 

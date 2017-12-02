@@ -16,10 +16,10 @@ else{%>
     		</div>
 </div>
 		
-        <label>Ingrese Rut Vendedor:</label>
+        <label>Ingrese Codigo de turno: </label>
 			<div class="input-group" id="input_tags">
 		        <span class="input-group-addon" id="basic-addon1"></span>
-		        <input id="CodigoVendedor" name="CodigoVendedor" type="number" class="form-control" placeholder="Rut del vendedor" aria-describedby="basic-addon1" value=''>
+		        <input id="CodigoVendedor" name="CodigoVendedor" type="text" class="form-control" placeholder="Rut del vendedor" aria-describedby="basic-addon1" value=''>
     		</div>
     		<div id="div_seller">
     			
@@ -133,7 +133,7 @@ else{%>
 					else{
 						$('#rutvendedor').val(data[0].rutVendedor);
 						$('#div_seller h3').remove();
-						$('#div_seller').append("<h3>Nombre del Vendedor: " + data[0].nombreVendedor +"</h3>");
+						$('#div_seller').append("<h3><b>Horario : </b>" + data[0].nombreVendedor +"</h3>");
 						$.ajax({
 							type: 'POST',
 							data: {'rut': data[0].rutVendedor},
