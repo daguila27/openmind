@@ -4,22 +4,22 @@
 else{%>
   <%- include layouts/user_header.ejs%>
 <%}%>
-<label for="turno">Seleccione turno:  </label>
-<select id="turno">
-	<option value="tm01">Turno Mañana</option>
-	<option value="tt02">Turno Tarde</option>
-	<option value="tn03">Turno Noche</option>
-</select>
 
-<div class='input-group date' id='datetimepicker1'>
-                    <input type='date' class="form-control" id="fecha" />
-                    <span class="input-group-addon">
-                        <span class="glyphicon glyphicon-calendar"></span>
-                    </span>
-                </div>
 
+
+
+<h1 class="page-header">Cierre de caja: </h1>
+
+	<label for="turno">Seleccione turno:  </label>
+	<select id="turno">
+		<option value="19192460">Turno Mañana</option>
+		<option value="tt02">Turno Tarde</option>
+		<option value="tn03">Turno Noche</option>
+	</select>
+	<label style="margin-left: 15px;" for="fecha">Ingrese Fecha: </label>
+	<input id="fecha" type="date">
 <button class="buscar-ventas"> Buscar</button>
-<div class="cierreCaja">
+<div class="cierreCaja" style="margin-top: 20px">
 	
 </div>
 
