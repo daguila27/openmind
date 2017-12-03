@@ -34,10 +34,26 @@ exports.sale = function(req, res){
 
 
 
+exports.cierreCaja = function(req,res){
+	res.render('select_date', {page_title:'Cierre de caja' ,login_admin: req.session.login_admin});
+}
 
 
+exports.cajaQuery = function(req, res){
+	var input = JSON.parse(JSON.stringify(req.body));
+	console.log(input);
+	var codigoTurno = input.turno;
+	var fecha = input.fecha;
+	req.getConnection(function(err, connection){
+		connection.query("SELECT * FROM vendedor RIGHT JOIN venta ON (vendedor.rutVendedor = venta.rut_vendedor) WHERE vendedor.rutVendedor = ? AND venta.fecha LIKE '%"+fecha+"%'",[codigoTurno],function(err,datos){
+			if(err)
+				console.log("Error Selecting : %s", err);
+			console.log(datos);
+			res.render('cierreCaja', {page_title: 'Detalles de ventas', data: datos});
+		});
+	});
 
-
+}
 
 
 

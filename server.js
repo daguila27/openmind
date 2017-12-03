@@ -199,6 +199,8 @@ app.post('/range_sale', sale.range_sale);
 
 app.post('/refreshTabla', sale.refreshTabla);
 
+app.get('/caja', sale.cierreCaja);
+app.post('/cajaQuery', sale.cajaQuery);
 
 
 

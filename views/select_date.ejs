@@ -1,0 +1,42 @@
+<%if(login_admin){%>
+  <%- include layouts/admin_header.ejs %>
+<%}
+else{%>
+  <%- include layouts/user_header.ejs%>
+<%}%>
+<label for="turno">Seleccione turno:  </label>
+<select id="turno">
+	<option value="tm01">Turno Mañana</option>
+	<option value="tt02">Turno Tarde</option>
+	<option value="tn03">Turno Noche</option>
+</select>
+
+<div class='input-group date' id='datetimepicker1'>
+                    <input type='date' class="form-control" id="fecha" />
+                    <span class="input-group-addon">
+                        <span class="glyphicon glyphicon-calendar"></span>
+                    </span>
+                </div>
+
+<button class="buscar-ventas"> Buscar</button>
+<div class="cierreCaja">
+	
+</div>
+
+<script type="text/javascript">
+	$(".buscar-ventas").on('click', function(e){
+		$.ajax({
+			type: 'POST',
+			data: {'turno': $("#turno").val(), 'fecha': $("#fecha").val()},
+			url: '/cajaQuery',
+			success: function(data){
+				$(".cierreCaja").html(data);
+			}
+		});
+	});
+
+
+</script>
+
+
+<%- include layouts/footer.ejs %>
