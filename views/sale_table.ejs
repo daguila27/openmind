@@ -37,6 +37,7 @@
     </table>
 </div>
 <script type="text/javascript">
+        
         $('.cantidad').on('keyup', function(e){
             e.preventDefault();
             var id = $(this).attr('id');
@@ -55,7 +56,24 @@
               }
             });
         });
-
+        $('.cantidad').on('click', function(e){
+            e.preventDefault();
+            var id = $(this).attr('id');
+            var i = id.substring(id.length-1);
+            var cantidad = $(this).val();
+            var codigoProducto = $("#codigoProducto"+i).val();
+            $.ajax({
+              type: 'POST',
+              data: {'id_producto': codigoProducto, 'cantidad': cantidad},
+              url: '/refreshTabla',
+              success: function(data){
+                  var datos = data.split("-");
+                  $("#precioFinal"+i).val(datos[1]);
+                  $("#finalPrice"+i).html("$"+datos[1]);
+                  $(".costoTotal").html(datos[0]);
+              }
+            });
+        });
 </script>
 
 

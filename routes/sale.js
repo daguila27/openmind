@@ -104,8 +104,10 @@ exports.check = function(req, res){
 	console.log(input);
 	req.getConnection(function(err, connection){
 		connection.query("SELECT * FROM producto WHERE id_producto = ?", [input.codigo], function(err, rows){
-			if(err)
+			if(err){
 				console.log("Error Selecting : %s", err);
+				res.send("error");
+			}
 			if(rows.length > 0){res.send("ok");}
 			else{res.send("error");}	
 		});
@@ -582,9 +584,23 @@ exports.add_product_other = function(req, res){
 
 exports.remove_product = function(req, res){
 	var input = JSON.parse(JSON.stringify(req.body));
+	console.log("REMOVIENDO PRODUCTO");
+	console.log("******INPUT*****");
+	console.log(input);
+	console.log("*****VARIABLE SESSION (ANTES)*****");
+	console.log(req.session.saleProducts);
+	console.log("Costo total: "+ req.session.CostoTotal);
+	//console.log(req.session.codeProducts);
+	var descuentoFinal = req.session.saleProducts[input.indice].precioFinal;
+	
 	req.session.saleProducts[input.indice] = null;
-	req.session.codeProducts[input.indice] = null;
-	req.session.CostoTotal -= parseInt(input.precio);
+	
+	console.log("*****VARIABLE SESSION (DESPUES)*****");
+	//req.session.codeProducts[input.indice] = null;
+	console.log(req.session.saleProducts);
+	req.session.CostoTotal -= parseInt(descuentoFinal);
+	
+	console.log("Costo total: "+ req.session.CostoTotal);
 	res.redirect('/render_sale');
 }
 
