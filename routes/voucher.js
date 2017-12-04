@@ -110,7 +110,7 @@ exports.voucher_sale = function(req, res){
 								printer.setTextDoubleWidth();
 								printer.println("Minimarket Rico Pan");
 
-								printer.println("Venta #"+666);
+								printer.println("Venta #"+req.session.codVenta);
 								printer.println("\n");
 								printer.alignLeft();
 								printer.setTextNormal();

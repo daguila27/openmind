@@ -33,8 +33,10 @@ exports.setPrecio = function(req, res){
 	req.getConnection(function(err, connection){
 		connection.query("SELECT * FROM producto", function(err, productos){
 			if(err){console.log("Error Selecting: %s", err);}
-			req.session.prod = productos;
-			res.redirect('/setPrecioB');
+			//req.session.prod = productos;
+
+			insertPrecio(connection, 0, productos, res);
+			//res.redirect('/setPrecioB');
 		});
 	});
 
