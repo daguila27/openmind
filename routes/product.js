@@ -647,3 +647,22 @@ exports.findImport = function(req, res){
 		});
 	}
 }
+
+
+
+
+exports.pull_data = function(req, res){
+	var input = req.params.id_producto;
+	req.getConnection(function(err, connection){
+		connection.query("SELECT * FROM producto WHERE id_producto = ?", [input], function(err, rows){
+			if(err){
+				console.log("Error Selecting : %s", err);
+			}
+			if(rows.length > 0){
+				var info = rows[0].nombre+"&"+rows[0].cantidadtotal+"&"+rows[0].precioactual;
+				console.log(info);
+				res.send(info);
+			}
+		});
+	});
+}

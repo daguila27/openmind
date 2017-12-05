@@ -153,6 +153,10 @@ app.post('/find_import', product.findImport);
 
 
 
+app.get('/pull_data_product/:id_producto', product.pull_data);
+
+
+
 
 app.post('/search_tag', tag.search);
 app.post('/add_tag', tag.add);
