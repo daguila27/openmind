@@ -8,9 +8,9 @@ else{%>
 
 	<label for="turno">Seleccione turno:  </label>
 	<select id="turno">
-		<option value="9784011">Turno Mañana</option>
-		<option value="19564400">Turno Tarde</option>
-		<option value="tn03">Turno Noche</option>
+	<%for(var k=0; k< vend.length; k++){%>
+		<option value="<%=vend[k].rutVendedor%>"><%=vend[k].nombreVendedor%></option>
+	<%}%>
 	</select>
 	<label style="margin-left: 15px;" for="fecha">Ingrese Fecha: </label>
 	<input id="fecha" type="date">

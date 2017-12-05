@@ -155,6 +155,8 @@ app.post('/find_import', product.findImport);
 
 app.get('/pull_data_product/:id_producto', product.pull_data);
 
+app.post('/editar_producto', product.editar);
+
 
 
 
@@ -212,7 +214,7 @@ app.post('/cajaQuery', sale.cajaQuery);
 
 
 
-
+app.get('/check_seller/:codigoVendedor', seller.check);
 app.get('/seller_list', seller.list);
 app.post('/find_seller', seller.find);
 app.post('/new_seller', seller.new);

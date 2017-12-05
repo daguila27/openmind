@@ -195,9 +195,24 @@ else{%>
 				alert('Ingrese el Rut del vendedor');
 			}
 			else{
-				$('#formulario').submit();
+				$.ajax({
+					type: 'GET',
+					url: '/check_seller/'+$("#CodigoVendedor").val(),
+					success: function(data){
+							if(data == 'ok'){
+								$('#formulario').submit();
+							}
+							else{
+								alert("Codigo de vendedor invalido.");
+							}	
+					}
+
+				});
 			}
 		});
+	
+
+
 	});
 </script>
 

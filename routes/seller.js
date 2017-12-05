@@ -1,3 +1,17 @@
+exports.check = function(req, res){
+	var input = req.params.codigoVendedor;
+	req.getConnection(function(err, connection){
+		connection.query("SELECT * FROM vendedor WHERE rutVendedor = ?",[input], function(err, sell){
+			if(err){console.log("Error Selecting : %s", err);}
+			if(sell.length > 0){
+				res.send('ok');
+			}
+			else{
+				res.send('error');
+			}
+		});
+	});
+}
 exports.list = function(req, res){
 	res.render('seller_list', {page_title: 'Vendedores'});
 	/*req.getConnection(function(err, connection){

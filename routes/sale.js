@@ -35,7 +35,13 @@ exports.sale = function(req, res){
 
 
 exports.cierreCaja = function(req,res){
-	res.render('select_date', {page_title:'Cierre de caja' ,login_admin: req.session.login_admin});
+	req.getConnection(function(err, connection){
+		if(err){console.log("Error al conectar DB : %s",err);}
+		connection.query("SELECT * FROM vendedor", function(err, vend){
+			if(err){console.log("Error Selecting : %s", err);}
+			res.render('select_date', {page_title:'Cierre de caja' ,login_admin: req.session.login_admin, vend: vend});
+		});
+	});
 }
 
 
