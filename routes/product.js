@@ -61,8 +61,8 @@ exports.new_product = function(req, res){
 	  req.getConnection(function (err, connection) {
 				var dataProduct = {
 					id_producto: parseInt(codigo),
-					cantidadTotal:   cant,
-					nombre: 	input.nombre
+					nombre: 	input.nombre,
+					cantidadTotal:   cant
 				};	
 				var dataProductFacture = {
 					id_producto: parseInt(codigo),
@@ -162,13 +162,14 @@ exports.create_producto = function(req, res){
 				var dataP = {
 					id_producto: input.id_producto,
 					nombre: input.nombre,
-					cantidadtotal: input.cantidad 
+					cantidadtotal: input.cantidad,
+					precioactual: input.precio
 				};
 
 				console.log("Ingresando datos del producto");
 				console.log(dataPF);
 				console.log(dataP);
-				var query1 = "INSERT INTO producto (id_producto, nombre, cantidadtotal) VALUES ('"+dataP.id_producto+"','"+ dataP.nombre+"','"+ dataP.cantidadtotal+"')";
+				var query1 = "INSERT INTO producto (id_producto, nombre, cantidadtotal, precioactual) VALUES ('"+dataP.id_producto+"','"+ dataP.nombre+"','"+ dataP.cantidadtotal+"','"+dataP.precioactual+"')";
 				console.log(query1);
 				connection.query(query1,function(err, rows){
 					if(err){console.log("Error Selecting : %s", err);}
