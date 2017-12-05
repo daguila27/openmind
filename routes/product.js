@@ -310,6 +310,7 @@ exports.findForSale = function(req, res){
 	
 }
 exports.show = function(req, res){
+	console.log("RENDERIZANDO STOCK DE PRODUCTOS");
 	req.getConnection(function(err,connection){
 					 connection.query('SELECT * FROM producto',function(err,rows)
 						{
@@ -572,21 +573,22 @@ exports.renderImport = function(req, res){
 
 exports.buscar_nombre = function(req, res){
 	var input = JSON.parse(JSON.stringify(req.body));
-	var array = input.NombreProduct.split(',');
+	var array = input.NombreProduct;
 	var query = "SELECT * FROM producto WHERE ";
-	for(var i = 0; i<array.length; i++){
+	query += "nombre LIKE '%"+array+"%'";	
+	/*for(var i = 0; i<array.length; i++){
 		query += "nombre LIKE '%"+array[i]+"%'";
 		if(i!=array.length-1){
 			query += " AND ";
 		}
-	}
+	}*/
 	console.log(query);
 	req.getConnection(function(err, connection){
 		//SELECT * FROM belita2.producto WHERE producto.nombre LIKE '%poleron%' AND producto.nombre LIKE '%hombre%';
 		connection.query(query, function(err, rows){
 			if(err)
 				console.log("Error Selecting : %s", err);
-			res.render('stock_table_nombre', {page_title: "Stock de Productos", data: rows, login_admin: req.session.login_admin});
+			res.render('stock_table_nombre', {page_title: "Stock de Productos", busqueda: array ,data: rows, login_admin: req.session.login_admin});
 		});
 	});
 }
@@ -654,6 +656,7 @@ exports.findImport = function(req, res){
 
 exports.pull_data = function(req, res){
 	var input = req.params.id_producto;
+	//console.log(input);
 	req.getConnection(function(err, connection){
 		connection.query("SELECT * FROM producto WHERE id_producto = ?", [input], function(err, rows){
 			if(err){
@@ -661,9 +664,28 @@ exports.pull_data = function(req, res){
 			}
 			if(rows.length > 0){
 				var info = rows[0].nombre+"&"+rows[0].cantidadtotal+"&"+rows[0].precioactual;
-				console.log(info);
+				//console.log(info);
 				res.send(info);
 			}
 		});
 	});
+}
+
+
+exports.editar = function(req, res){
+	var input = JSON.parse(JSON.stringify(req.body));
+	console.log(input);
+	var codigo = input.codigo;
+	var nombre = input.nombre;
+	var stock = input.stock;
+	var precio = input.precio;
+	req.getConnection(function(err, connection){
+		if(err){console.log("Error de conexion!");}
+		connection.query("UPDATE producto SET nombre=?, cantidadtotal=?, precioactual=? WHERE id_producto=?", [nombre, stock, precio, codigo],function(err, rows){
+			if(err){console.log("Error Selecting : %s", err);}
+			res.redirect('/show_product');
+		});
+	});
+
+
 }
