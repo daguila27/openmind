@@ -56,6 +56,7 @@
           console.log(position);
           var top = 100 + position*90;
           $('.container_details').css('top', top+'px');
+          console.log($(this).data('codigo'));
           $.ajax({
                 type: 'GET',
                 url: '/pull_data_product/'+$(this).data('codigo'),
