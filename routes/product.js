@@ -689,3 +689,16 @@ exports.editar = function(req, res){
 
 
 }
+
+
+
+exports.search_nombre = function(req, res){
+	console.log(req.params);
+	var nombre = req.params.nombre;
+	req.getConnection(function(err, connection){
+		connection.query("SELECT * FROM producto WHERE nombre LIKE '%"+nombre+"%'", function(err, productos){
+			if(err){console.log("Error Selecting : %s", err);}
+			res.render('show_product_found', {prod: productos});
+		});
+	});
+}

@@ -158,6 +158,10 @@ app.get('/pull_data_product/:id_producto', product.pull_data);
 app.post('/editar_producto', product.editar);
 
 
+app.get('/search_nombre/:nombre', product.search_nombre);
+
+
+
 
 
 app.post('/search_tag', tag.search);
