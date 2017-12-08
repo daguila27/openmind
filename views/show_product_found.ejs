@@ -1,5 +1,6 @@
 <style type="text/css">
 	.item_nombre{
+		height: 100%;
 		display: flex;
 		text-align: center;
 		font-size: 20px;
@@ -33,9 +34,9 @@
 							url: '/add_product',
 							success: function(data){
 								$('.container_list').html(data);
-								$('#CodigoProduct').prop('disabled', false);
-								$('#CodigoProduct').val("");
-								$('#CodigoProduct').focus();
+								$('#NombreProduct').val("");
+								$('#NombreProduct').focus();
+								$("#productos_found").html("");
 							}
 						});
 		});
