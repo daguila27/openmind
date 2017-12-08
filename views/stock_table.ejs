@@ -80,6 +80,7 @@
           var position = $(this).data('top');
           var top = 100 + position*90;
           $('.container_details').css('top', top+'px');
+          console.log($(this).data('codigo'));
           var id = $("#idProducto"+position).val();
           $.ajax({
                 type: 'GET',

@@ -658,7 +658,7 @@ exports.pull_data = function(req, res){
 	var input = req.params.id_producto;
 	//console.log(input);
 	req.getConnection(function(err, connection){
-		connection.query("SELECT * FROM producto WHERE id_producto = ?", [input], function(err, rows){
+		connection.query("SELECT * FROM producto WHERE id_producto = ?",[input], function(err, rows){
 			if(err){
 				console.log("Error Selecting : %s", err);
 			}
