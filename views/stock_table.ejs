@@ -1,7 +1,11 @@
 
 
 <ul id="container_all_products">
+  
+
   <%for(var i=0; i < data.length; i++){%>
+
+
     <li style="display: flex;" class='list-group-item'>
       	
       	<div style="width: 45%"><h3><b>Nombre: </b><%=data[i].nombre%></h3></div>
@@ -27,6 +31,10 @@
       
     </li>
   <%}%>
+
+
+
+
 </ul>
 
 
@@ -60,6 +68,12 @@
     </div>
   </div>
 </div>
+
+
+
+
+
+
 <script type="text/javascript">
       $('.editProducto').on('click', function(e){
           e.preventDefault();  

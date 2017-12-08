@@ -8,18 +8,25 @@ else{%>
 <script type="text/javascript" src="/assets/js/funciones.js"></script>
 <link rel="stylesheet" type="text/css" href="/assets/css/style_sale.css">
 <h1 class="page-header">Nueva Venta:</h1>
-<div style="margin-bottom: 50px">
-        <label>Ingrese Producto:</label>	
-      	  	<div class="input-group" id="input_tags">
-		        <span class="input-group-addon" id="basic-addon1"></span>
-		        <input data-role="tagsinput" id="CodigoProduct" type="text" class="form-control" placeholder="Codigo de barra" aria-describedby="basic-addon1">
-    		</div>
-</div>
+	<div style="margin-bottom: 50px">
+	        <label>Ingrese Producto:</label>	
+	      	  	<div class="input-group" id="input_tags">
+			        <span class="input-group-addon" id="basic-addon1"></span>
+			        <input data-role="tagsinput" id="CodigoProduct" type="text" class="form-control" placeholder="Codigo de barra" aria-describedby="basic-addon1">
+	    		</div>
+	    		<div class="input-group" id="input_tags">
+			        <span class="input-group-addon" id="basic-addon1"></span>
+			        <input id="NombreKey" type="text" class="form-control" placeholder="Nombre del Producto" aria-describedby="basic-addon1">
+	    		</div>
+	    		<div id="productos_found" class="row" style="margin-left: 5%;margin-right: 5%;">
+	   
+	    		</div>
+	</div>
 		
         <label>Ingrese Codigo de turno: </label>
-			<div class="input-group" id="input_tags">
+			<div class="input-group">
 		        <span class="input-group-addon" id="basic-addon1"></span>
-		        <input id="CodigoVendedor" name="CodigoVendedor" type="text" class="form-control" placeholder="Rut del vendedor" aria-describedby="basic-addon1" value=''>
+		        <input data-role="tagsinput" id="CodigoVendedor" name="CodigoVendedor" type="text" class="form-control" placeholder="Rut del vendedor" aria-describedby="basic-addon1" value=''>
     		</div>
     		<div id="div_seller">
     			
@@ -145,10 +152,26 @@ else{%>
 					}
 				} 
 			});
-
-
-
 		});
+
+
+
+		$("#NombreKey").on('keyup', function(e){
+				e.preventDefault();
+				if($(this).val().length > 0){
+					$.ajax({
+						type: 'GET',
+						url: '/search_nombre/'+$(this).val(),
+						success: function(data){
+							$("#productos_found").html(data);
+						}
+					});
+				}
+				else{
+					$("#productos_found").html("<ul></ul>");
+				}
+		});
+
 		$('#CodigoCliente').on('keyup', function(e){
 			e.preventDefault();
 			var code = $('#CodigoCliente').val();
@@ -211,7 +234,7 @@ else{%>
 			}
 		});
 	
-
+		
 
 	});
 </script>
