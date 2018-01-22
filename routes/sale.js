@@ -959,3 +959,31 @@ exports.range_sale = function(req, res){
 		});
 	});
 }
+
+
+exports.informeTurno = function(req, res){
+	req.getConnection(function(err, connection){
+		connection.query('SELECT * FROM vendedor WHERE active = 1 LIMIT 1', function(err, turno){
+			if(err) throw err;
+
+			var fecha = new Date().toLocaleDateString();
+			if(turno.length == 0){
+				req.session.before = '/inf_turno';
+				connection.query("SELECT info.codigo_producto, info.fecha, info.precio AS precio_u, producto.nombre, SUM(info.cantidad) as total"
+					+"  FROM (SELECT ventaproducto.*, venta.fecha FROM ventaproducto LEFT JOIN venta ON ventaproducto.id_venta = venta.id_venta WHERE venta.rut_vendedor = ? AND venta.fecha=? ORDER BY ventaproducto.codigo_producto) as info "
+					+"LEFT JOIN producto ON info.codigo_producto = producto.id_producto GROUP BY info.codigo_producto", [turno[0].rutVendedor, fecha], function(err, inf){
+						if(err) throw err;
+						res.render('informe_turno', {page_title: "Informe de Ventas", login_admin: req.session.login_admin, data: inf });
+					});
+			}
+			else{
+				connection.query("SELECT info.codigo_producto, info.fecha, info.precio AS precio_u, producto.nombre, SUM(info.cantidad) as total"
+					+"  FROM (SELECT ventaproducto.*, venta.fecha FROM ventaproducto LEFT JOIN venta ON ventaproducto.id_venta = venta.id_venta WHERE venta.rut_vendedor = ? AND venta.fecha=? ORDER BY ventaproducto.codigo_producto) as info "
+					+"LEFT JOIN producto ON info.codigo_producto = producto.id_producto GROUP BY info.codigo_producto", [turno[0].rutVendedor, fecha], function(err, inf){
+						if(err) throw err;
+						res.render('informe_turno', {page_title: "Informe de Ventas", login_admin: req.session.login_admin, data: inf });
+					});
+			}
+			});
+	});
+}
