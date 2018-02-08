@@ -148,6 +148,8 @@ app.post('/import_add', product.addImport);
 app.post('/export_add', product.addExport);
 app.get('/render_import', product.renderImport);
 app.post('/buscar_nombre', product.buscar_nombre);
+app.post('/buscar_nombre_render', product.buscar_nombre_render);
+
 
 app.post('/find_import', product.findImport);
 
@@ -159,9 +161,11 @@ app.post('/editar_producto', product.editar);
 
 
 app.get('/search_nombre/:nombre', product.search_nombre);
-
-
-
+app.get('/inventory_product', product.inventory_product);
+app.get('/tabla_inventory', product.tabla_inventory);
+app.post('/regist_product', product.regist_product);
+app.post('/remove_product_inventory', product.remove_product_inventory);
+app.get('/guardar_inventory', product.guardar_inventory);
 
 
 app.post('/search_tag', tag.search);

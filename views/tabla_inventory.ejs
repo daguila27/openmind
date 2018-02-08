@@ -1,0 +1,69 @@
+<script src="/assets/js/jquery-3.1.1.min.js"></script>
+<script src="/assets/js/jquery-1.11.3.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/assets/css/style_printer.css">
+<script src="/assets/js/JsBarcode.all.min.js"></script>
+<div class="table-responsive" id="tabla_productos">
+  <table class="table table-bordered" id="list_product">
+            <tr id="head">
+              <td><b>Producto</b></td>
+              <td><b>Precio por unidad</b></td>
+              <td><b>Unidades</b></td>
+              <td></td>
+            </tr>
+          <%for(var i=0; i< data.length; i++){
+            if(data[i] != null){
+          %>
+                
+                <tr>
+                    <td><b><%=data[i].nombre%></b></td>
+                    <td><b>$<%=data[i].precio%></b></td>
+                    <td><b class="cantidad" data-cantidad="<%=data[i].cantidad%>"><%=data[i].cantidad%> unidades</b></td>
+                    <td>
+                        <div class='buttons'>
+                            <button class='btn btn-default delete' data-indice="<%= i%>"data-idproducto="<%=data[i].id_producto%>" data-cant="<%=data[i].cantidad%>">
+                              <span class='glyphicon glyphicon-remove' aria-hidden='true'></span>
+                            </button>
+                        </div>
+                    </td>   
+                </tr>
+          <%}}%>
+          <tr id="head">  
+              <td></td>
+              <td></td> 
+              <td class="sumaTotal"></td>
+              <td></td>
+          </tr>         
+    </table>
+</div>
+
+<div class="next">
+  <form id="sig" method="get" action="/guardar_inventory">
+  <button class='btn btn-default' type="submit">
+                <span class='glyphicon glyphicon-check' aria-hidden='true'></span>  Terminar Inventario
+      </button>
+  </form>
+</div>
+<script type="text/javascript">
+     var sumaTotal = 0;
+     $(".cantidad").each(function(index){
+        sumaTotal += $(this).data("cantidad");
+     });
+     $(".sumaTotal").html("<b>"+sumaTotal+" unidades</b>");
+
+
+    $(".delete").on('click', function(e){
+        e.preventDefault();
+        var id_producto = $(this).data("idproducto");
+        var cantidad = $(this).data("cant");
+        console.log("BORRANDO PRODUCTO");
+        $.ajax({
+            type: 'POST',
+            data: {id_producto: id_producto, cantidad: cantidad, indice: $(this).data('indice')},
+            url: '/remove_product_inventory',
+            success: function(data){
+                $(".tabla").html(data);
+            }
+        });
+    });
+
+</script>
