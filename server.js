@@ -216,6 +216,8 @@ app.post('/refreshTabla', sale.refreshTabla);
 app.get('/caja', sale.cierreCaja);
 app.post('/cajaQuery', sale.cajaQuery);
 
+app.get('/inf_turno', sale.informeTurno)
+
 
 
 
@@ -229,6 +231,10 @@ app.post('/new_seller', seller.new);
 app.post('/erase_seller', seller.erase);
 app.get('/render_seller', seller.render);
 app.get('/details_seller/:rutVendedor', seller.details);
+app.get('/def_turno', seller.def_turno);
+
+app.post('/set_turno', seller.set_turno);
+
 
 app.post('/find_client', client.find);
 app.get('/client_list', client.list);

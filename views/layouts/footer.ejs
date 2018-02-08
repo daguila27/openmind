@@ -6,6 +6,19 @@
 ================================================== -->
 <!-- Placed at the end of the document so the pages load faster -->
 
-
+<script type="text/javascript">
+  $("form#turnoForm").submit(function(e){
+      e.preventDefault();
+      var data = {};
+      data.codturno = $("#codturno").val();
+      data.monto = $("#monto").val();
+      data.before = $("#before").val();
+      $.ajax({
+        type: 'POST',
+        data: data,
+        url: '/set_turno'
+      });
+  });
+</script>
 </body>
 </html>

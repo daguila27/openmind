@@ -36,17 +36,24 @@
     <script src="/assets/js/bootstrap.min.js"></script>
 
 
-
     <!-- cdn for modernizr, if you haven't included it already -->
     <script src="http://cdn.jsdelivr.net/webshim/1.12.4/extras/modernizr-custom.js"></script>
     <!-- polyfiller file to detect and load polyfills -->
     <script src="http://cdn.jsdelivr.net/webshim/1.12.4/polyfiller.js"></script>
-    <script>
+    <!--<script>
       webshims.setOptions('waitReady', false);
       webshims.setOptions('forms-ext', {types: 'date'});
       webshims.polyfill('forms forms-ext');
-    </script>
+    </script>-->
 
+
+
+
+    <!-- jQuery -->
+    <script src="/vendor/jquery/jquery.min.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="/vendor/bootstrap/js/bootstrap.min.js"></script>
 
     
     <style type="text/css">
@@ -143,9 +150,10 @@
                 </div>-->
                 <div class="menu" id="estadisticas">
                     <li><a class="h4">Estadisticas</a></li>
-                    <div class="dropdown" id="drop-estadisticas" data-items="2">
+                    <div class="dropdown" id="drop-estadisticas" data-items="3">
                         <a href="/sale_estadisticas"><li>Datos de Ventas</li></a>
                         <a href="/caja"><li>Cierre de caja</li></a>
+                        <a href="/inf_turno"><li>Cerrar turno</li></a>
                     </div>
                 </div>
             </ul>
@@ -164,4 +172,33 @@
                     $('#drop-'+id).css("height", "0px");
                 });
         </script>
+
+        <div class="modal fade" id="def_turno" tabindex="-1" role="dialog">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <form id="turnoForm">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span  aria-hidden="true">&times;</span></button>
+                  <h4 class="modal-title">Aun no a definido su turno: </h4>
+                </div>
+                    
+                <div class="modal-body input-group">
+                      <input type="hidden" id="before" value="<%= before%>">
+                      <select class="form-control" id="codturno">
+                        <%for(var j=0; j < data.length; j++){%>
+                          <option value="<%= data[j].rutVendedor%>"><%= data[j].nombreVendedor%></option>
+                        <%}%>
+                      </select>
+                      <input class="form-control" placeholder="Ingrese monto de caja chica" type="number" id="monto" required>        
+                </div>
+                <div class="modal-footer">
+                  <button type="submit" class="btn btn-primary">Enviar</button>
+                </div><!-- /.modal -->
+              </form>
+            </div><!-- /.modal-content -->
+          </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+        <button data-toggle="modal" data-target="#def_turno">AQUI</button>
+
+
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main" style="margin-top: 29px">

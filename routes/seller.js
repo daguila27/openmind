@@ -94,3 +94,32 @@ exports.details = function(req, res){
 		});
 	});
 }
+
+
+
+exports.def_turno = function(req, res){
+	req.getConnection(function(err, connection){
+		connection.query('SELECT * FROM vendedor', function(err, rows){
+			if(err)
+			console.log("Error Selecting : %s", err);
+			res.render('def_turno', {page_title: 'Definir turno', data: rows, login_admin: req.session.login_admin, before: req.session.before});
+		});
+	});
+}
+
+exports.set_turno = function(req, res){
+	var input = JSON.parse(JSON.stringify(req.body));
+	console.log(input);
+	var ruta = input.before;
+	input.fecha = new Date().toLocaleDateString();
+	delete input.before;
+	req.getConnection(function(err, connection){
+		connection.query('INSERT INTO caja SET ?', [input], function(err, rows){
+			if(err) throw err;
+			connection.query("UPDATE vendedor SET active = 1 WHERE rutVendedor = ?", [input.codturno], function(err, rows){
+				if(err) throw err;
+				res.redirect(ruta);
+			});	
+		});
+	});
+}
