@@ -73,6 +73,8 @@ app.get('/', index.index);
 app.post('/barCodes', index.codes);
 app.post('/rutCodes', index.rutCodes);
 app.get('/admin_login', index.to_login);
+
+app.get('/login_out', index.login_out);
 app.get('/changePass', index.changePass);
 app.get('/setPrecio', index.setPrecio);
 app.get('/setPrecioB', index.setPrecioB);
@@ -212,7 +214,9 @@ app.post('/refreshTabla', sale.refreshTabla);
 app.get('/caja', sale.cierreCaja);
 app.post('/cajaQuery', sale.cajaQuery);
 
-app.get('/inf_turno', sale.informeTurno)
+app.get('/inf_turno', sale.informeTurno);
+
+app.post('/quitar_saldo', sale.quitarSaldo);
 
 
 
@@ -231,6 +235,7 @@ app.get('/def_turno', seller.def_turno);
 
 app.post('/set_turno', seller.set_turno);
 
+app.post('/cerrar_turno', sale.cerrarTurno);
 
 app.post('/find_client', client.find);
 app.get('/client_list', client.list);

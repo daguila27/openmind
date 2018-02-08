@@ -107,7 +107,7 @@
                 </button>
                 <a href="#" style="font-family: 'Pacifico', cursive; font-size: 50px; color: white;">Rico Pan</a>
 
-                <a href="/" style="position: absolute; top: 10px; right: 10px">Cerrar Sesion</a>
+                <a href="/login_out" style="position: absolute; top: 10px; right: 10px">Cerrar Sesion</a>
             </div>
         </div>
     </nav>
@@ -172,31 +172,7 @@
                 });
         </script>
 
-        <div class="modal fade" id="def_turno" tabindex="-1" role="dialog">
-          <div class="modal-dialog" role="document">
-            <div class="modal-content">
-              <form id="turnoForm">
-                <div class="modal-header">
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span  aria-hidden="true">&times;</span></button>
-                  <h4 class="modal-title">Aun no a definido su turno: </h4>
-                </div>
-                    
-                <div class="modal-body input-group">
-                      <input type="hidden" id="before" value="<%= before%>">
-                      <select class="form-control" id="codturno">
-                        <%for(var j=0; j < data.length; j++){%>
-                          <option value="<%= data[j].rutVendedor%>"><%= data[j].nombreVendedor%></option>
-                        <%}%>
-                      </select>
-                      <input class="form-control" placeholder="Ingrese monto de caja chica" type="number" id="monto" required>        
-                </div>
-                <div class="modal-footer">
-                  <button type="submit" class="btn btn-primary">Enviar</button>
-                </div><!-- /.modal -->
-              </form>
-            </div><!-- /.modal-content -->
-          </div><!-- /.modal-dialog -->
-        </div><!-- /.modal -->
+       
         <button data-toggle="modal" data-target="#def_turno">AQUI</button>
 
 

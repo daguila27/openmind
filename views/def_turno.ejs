@@ -8,22 +8,27 @@ else{%>
 <div class="modal fade" id="def_turno" tabindex="-1" role="dialog">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
-      <form id="turnoForm">
+      <form action="/set_turno" method="POST">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span  aria-hidden="true">&times;</span></button>
           <h4 class="modal-title">Aun no a definido su turno: </h4>
         </div>
             
-        <div class="modal-body" style="width: 100%">
-              <div class="input-group">
-                <input type="hidden" id="before" value="<%= before%>">
-                <select class="form-control" id="codturno">
-                  <%for(var j=0; j < data.length; j++){%>
-                    <option value="<%= data[j].rutVendedor%>"><%= data[j].nombreVendedor%></option>
-                  <%}%>
-                </select>
-                <input class="form-control" placeholder="Ingrese monto de caja chica" type="number" id="monto" required>
-              </div>        
+        <div class="modal-body">
+              <input type="hidden" id="before" value="<%= before%>">
+
+                <div class="form-group">
+                  <select class="form-control" name="codturno">
+                    <%for(var j=0; j < data.length; j++){%>
+                      <option value="<%= data[j].rutVendedor%>"><%= data[j].nombreVendedor%></option>
+                    <%}%>
+                  </select>
+                </div>
+                <div class="input-group">
+                  <span class="input-group-addon">$</span>
+                  <input name="monto" type="number" class="form-control" placeholder="Ingrese monto de caja chica" required>
+                </div> 
+
         </div>
         <div class="modal-footer">
           <button type="submit" class="btn btn-primary">Enviar</button>
@@ -38,17 +43,19 @@ else{%>
 
 
   $('#def_turno').modal('show');
-  $("form#turnoForm").submit(function(e){
+  /*$("form#turnoForm").submit(function(e){
       e.preventDefault();
       var data = {};
+      
+      
       data.codturno = $("#codturno").val();
       data.monto = $("#monto").val();
-      data.before = $("#before").val();
       $.ajax({
         type: 'POST',
         data: data,
-        url: '/set_turno'
+        url: '/set_turno',
+
       });
-  });
+  });*/
 </script>
 <%- include layouts/footer.ejs %>

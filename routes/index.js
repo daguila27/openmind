@@ -6,6 +6,11 @@ exports.to_login = function(req, res){
 	res.render('admin_login', {page_title: 'Ingreso de Administrador', login: ''});
 }
 
+
+exports.login_out = function(req, res){
+	//delete req.session.sellerData;
+	res.redirect('/');
+}
 exports.codes = function(req, res){
 	var input = JSON.parse(JSON.stringify(req.body));
 	console.log(input);

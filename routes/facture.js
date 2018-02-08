@@ -78,6 +78,7 @@ exports.new_inventory = function(req, res){
 }
 
 exports.list = function(req, res){
+		//res.redirect('/def_turno');
 		res.render('facture_list', {page_title: 'Facturas pendientes'});
 					
 	}

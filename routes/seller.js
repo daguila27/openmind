@@ -109,17 +109,24 @@ exports.def_turno = function(req, res){
 
 exports.set_turno = function(req, res){
 	var input = JSON.parse(JSON.stringify(req.body));
-	console.log(input);
-	var ruta = input.before;
 	input.fecha = new Date().toLocaleDateString();
 	delete input.before;
 	req.getConnection(function(err, connection){
 		connection.query('INSERT INTO caja SET ?', [input], function(err, rows){
 			if(err) throw err;
-			connection.query("UPDATE vendedor SET active = 1 WHERE rutVendedor = ?", [input.codturno], function(err, rows){
-				if(err) throw err;
-				res.redirect(ruta);
-			});	
+
+			connection.query("UPDATE vendedor SET active = 0 WHERE active = 1", function(err, rows){
+					if(err) throw err;
+				connection.query("UPDATE vendedor SET active = 1 WHERE rutVendedor = ?", [input.codturno], function(err, rows){
+					if(err) throw err;	
+					connection.query("SELECT * FROM vendedor WHERE active = 1", function(err, seller){
+						if(err) throw err;
+						req.session.sellerData = seller[0];
+						res.redirect(req.session.nexturl);
+				
+					});	
+				});
+			});		
 		});
 	});
 }

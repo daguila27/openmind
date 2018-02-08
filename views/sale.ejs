@@ -23,13 +23,13 @@ else{%>
 	    		</div>
 	</div>
 		
-        <label>Ingrese Codigo de turno: </label>
-			<div class="input-group">
+        <!--<label>Ingrese Codigo de turno: </label>-->
+			<div class="input-group" style="display:none;">
 		        <span class="input-group-addon" id="basic-addon1"></span>
-		        <input data-role="tagsinput" id="CodigoVendedor" name="CodigoVendedor" type="text" class="form-control" placeholder="Rut del vendedor" aria-describedby="basic-addon1" value=''>
+		        <input data-role="tagsinput" id="CodigoVendedor" name="CodigoVendedor" type="text" class="form-control" placeholder="Rut del vendedor" aria-describedby="basic-addon1" value='<%=vendedor.rutVendedor%>'>
     		</div>
     		<div id="div_seller">
-    			
+    			<h3><b>Horario : </b><%= vendedor.nombreVendedor %></h3>
     		</div> 	
     		<!--<label>Ingrese Rut Cliente:</label>
       	  	<div class="input-group" id="input_tags">
@@ -54,7 +54,7 @@ else{%>
 <form method='post' action='/finish_sale' id="formulario">
 <div>
 	<input type="hidden" id="diferencia" name="diferenciaSaldo">	
-	<input type="hidden" id="rutvendedor" name="CodigoVendedor">
+	<input type="hidden" id="rutvendedor" name="CodigoVendedor" value="<%=vendedor.rutVendedor%>">
 	<input type="hidden" id="rutcliente" name="CodigoCliente">
 	<input type="hidden" id="Saldo" name="SaldoMonedero">
 	<div class="pago">

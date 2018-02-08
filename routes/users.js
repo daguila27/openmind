@@ -16,7 +16,13 @@ exports.login = function(req, res){
             console.log(req.session);
             req.session.login_admin = true;
             console.log(req.session);
-            res.redirect('/facture_list');
+            if(req.session.sellerData){
+              res.redirect('/facture_list');
+            }
+            else{
+              req.session.nexturl = '/facture_list';
+              res.redirect('/def_turno');
+            }
           }
         });
     });

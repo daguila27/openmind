@@ -4,7 +4,13 @@ exports.new = function(req, res){
 	req.session.codVenta = 0;
 	req.session.CostoTotal = 0;
 	console.log(req.session.saleProducts);
-	res.render('sale', {page_title: 'Nueva Venta', login_admin: req.session.login_admin});
+	if(req.session.sellerData){
+    	res.render('sale', {page_title: 'Nueva Venta', login_admin: req.session.login_admin, vendedor: req.session.sellerData});
+	}
+    else{
+      req.session.nexturl = '/new_sale';
+      res.redirect('/def_turno');
+    }
 }
 exports.refresh = function(req, res){
 	var input = JSON.parse(JSON.stringify(req.body));
@@ -963,27 +969,57 @@ exports.range_sale = function(req, res){
 
 exports.informeTurno = function(req, res){
 	req.getConnection(function(err, connection){
-		connection.query('SELECT * FROM vendedor WHERE active = 1 LIMIT 1', function(err, turno){
-			if(err) throw err;
-
+		
 			var fecha = new Date().toLocaleDateString();
-			if(turno.length == 0){
-				req.session.before = '/inf_turno';
+			//console.log(fecha);
+			fecha = fecha.split('-');
+			if(fecha[1].length == 1){fecha[1] = "0"+fecha[1];}
+			if(fecha[2].length == 1){fecha[2] = "0"+fecha[2];}
+			var date = fecha.join('-');
+			//var fecha = fecha.getFullYear()+"%"+parseInt(fecha.getMonth()+1).toString()+"%"+parseInt(fecha.getDate()+1).toString();
+			console.log(date);
+			console.log(req.session.sellerData);
+			connection.query("SELECT caja.*,vendedor.nombreVendedor as nombre FROM caja left join vendedor on caja.codturno=vendedor.rutVendedor  WHERE idcaja=(SELECT MAX(idcaja) FROM caja)", function(err, caja){
 				connection.query("SELECT info.codigo_producto, info.fecha, info.precio AS precio_u, producto.nombre, SUM(info.cantidad) as total"
-					+"  FROM (SELECT ventaproducto.*, venta.fecha FROM ventaproducto LEFT JOIN venta ON ventaproducto.id_venta = venta.id_venta WHERE venta.rut_vendedor = ? AND venta.fecha=? ORDER BY ventaproducto.codigo_producto) as info "
-					+"LEFT JOIN producto ON info.codigo_producto = producto.id_producto GROUP BY info.codigo_producto", [turno[0].rutVendedor, fecha], function(err, inf){
+						+"  FROM (SELECT ventaproducto.*, venta.fecha FROM ventaproducto LEFT JOIN venta ON ventaproducto.id_venta = venta.id_venta WHERE venta.rut_vendedor = ? AND venta.fecha like '"+date+"%' ORDER BY ventaproducto.codigo_producto) as info "
+						+"LEFT JOIN producto ON info.codigo_producto = producto.id_producto GROUP BY info.codigo_producto", [req.session.sellerData.rutVendedor], function(err, inf){
+							if(err) throw err;
+							console.log(inf);
+							res.render('informe_turno', {page_title: "Informe de Ventas", login_admin: req.session.login_admin, data: inf, caja: caja[0] });
+				});
+			});
+	});
+}
+
+
+exports.cerrarTurno = function(req, res){
+	var input = JSON.parse(JSON.stringify(req.body));
+	var final = input.final;
+	var idcaja = input.idcaja;
+	req.getConnection(function(err, connection){
+			if(err) throw err;
+				connection.query("UPDATE caja SET final=? WHERE idcaja=?", [final,idcaja],function(err, caja){
+				if(err) throw err;
+				delete req.session.sellerData;
+				res.redirect('/');
+			});
+	});
+}
+
+
+exports.quitarSaldo = function(req, res){
+	var input = JSON.parse(JSON.stringify(req.body));
+	var idcaja = input.idcaja;
+	var monto = input.monto;
+	req.getConnection(function(err, connection){
+			if(err) throw err;
+				connection.query("UPDATE caja SET monto = monto-"+monto+" WHERE idcaja=?", [idcaja],function(err, updata){
+					if(err) throw err;
+					connection.query("SELECT * FROM caja WHERE idcaja=?", [idcaja],function(err, caja){
 						if(err) throw err;
-						res.render('informe_turno', {page_title: "Informe de Ventas", login_admin: req.session.login_admin, data: inf });
+						console.log(caja);
+						res.send(caja[0].monto+'');
 					});
-			}
-			else{
-				connection.query("SELECT info.codigo_producto, info.fecha, info.precio AS precio_u, producto.nombre, SUM(info.cantidad) as total"
-					+"  FROM (SELECT ventaproducto.*, venta.fecha FROM ventaproducto LEFT JOIN venta ON ventaproducto.id_venta = venta.id_venta WHERE venta.rut_vendedor = ? AND venta.fecha=? ORDER BY ventaproducto.codigo_producto) as info "
-					+"LEFT JOIN producto ON info.codigo_producto = producto.id_producto GROUP BY info.codigo_producto", [turno[0].rutVendedor, fecha], function(err, inf){
-						if(err) throw err;
-						res.render('informe_turno', {page_title: "Informe de Ventas", login_admin: req.session.login_admin, data: inf });
-					});
-			}
 			});
 	});
 }
