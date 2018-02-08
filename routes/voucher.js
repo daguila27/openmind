@@ -78,8 +78,9 @@ exports.generate_voucher = function(req, res){
 
 exports.voucher_sale = function(req, res){
 	var detalles = req.session.saleProducts;
+	console.log(detalles);
 	var Costo = req.session.CostoTotal;
-	var details = ""; 
+	var details = "   Nombre                   Cantidad    Precio\n\n"; 
 	var f = new Date();
 	var fecha = f.getDate()+"/"+f.getMonth()+"/"+f.getFullYear()+" "+f.getHours()+":"+f.getMinutes()+":"+f.getSeconds();
 	
@@ -91,10 +92,10 @@ exports.voucher_sale = function(req, res){
 				space += " ";
 			}
 			if(detalles[i].precioFinal || detalles[i].precioFinal == 0){
-				details += "   " + detalles[i].nombre.replace(',',' ') + space+"$"+ detalles[i].precioFinal+ "\n";
+				details += "   " + detalles[i].nombre.substring(0,20)+space+detalles[i].cantidad+"      $"+ detalles[i].precioFinal+ "\n";
 			}
 			else{
-				details += "   " + detalles[i].nombre.replace(',',' ') + space+"$"+ detalles[i].precio+ "\n";	
+				details += "   " + detalles[i].nombre.substring(0,20)+space+detalles[i].cantidad+"      $"+ detalles[i].precio+ "\n";	
 			}
 		}
 	}

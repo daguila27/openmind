@@ -1,8 +1,7 @@
 <%- include layouts/admin_header.ejs %>
 <div class="proveedor">
   <div style="display: flex;">
-    <h3 style="height: 50px" class="pageheader">Nuevo Inventario: Factura <%=id_factura%></h3>
-    <input type="hidden" id="idfactura" value="<%=id_factura%>">
+    <h3 style="height: 50px" class="pageheader">Nuevo Inventario: </h3>
   </div>   
 </div>
 
@@ -14,7 +13,7 @@
         </div>
         <div class="input-group">
 		        <span class="input-group-addon" id="basic-addon1"></span>
-		        <input id="NombreProduct" type="text" class="form-control" placeholder="Nombre(Tags)" aria-describedby="basic-addon1">
+		        <input id="NombreProduct" type="text" class="form-control" placeholder="Nombre" aria-describedby="basic-addon1">
     		</div>
 		    <div class="input-group">
 		      <span class="input-group-addon" id="basic-addon1"></span>
@@ -38,22 +37,21 @@
 	$('#CodigoProduct').focus();
 	$.ajax({
 		type: 'GET',
-		url: '/tabla_factura/'+$("#idfactura").val(),
+		url: '/tabla_inventory',
 		success: function(data){
 			$(".tabla").html(data);
 		}
 	});
 	$(".regist_button").on('click', function(e){
 		e.preventDefault();
-		var id_factura = $("#idfactura").val();
-        var cantidad = $('#CantidadProduct').val();
+		var cantidad = $('#CantidadProduct').val();
         var nombre = $('#NombreProduct').val().toLowerCase();
         var codigo = $('#CodigoProduct').val();
         var precio = $('#PrecioProduct').val();
 		$.ajax({
 			type: 'POST',
-			url: '/create_producto',
-			data: {id_factura: id_factura, id_producto: codigo, cantidad: cantidad, nombre: nombre, precio: precio},
+			url: '/regist_product',
+			data: {id_producto: codigo, cantidad: cantidad, nombre: nombre, precio: precio},
 			success: function(data){
 				$(".tabla").html(data);
 			}
@@ -79,6 +77,5 @@
 	});
 
 </script>
-
 
 <%- include layouts/footer.ejs %>

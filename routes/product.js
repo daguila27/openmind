@@ -583,17 +583,30 @@ exports.buscar_nombre = function(req, res){
 		}
 	}*/
 	console.log(query);
+	res.render('stock_table_nombre', {page_title: "Stock de Productos", busqueda: array ,login_admin: req.session.login_admin});
+}
+
+exports.buscar_nombre_render = function(req, res){
+	var input = JSON.parse(JSON.stringify(req.body));
+	var array = input.NombreProduct;
+	var query = "SELECT * FROM producto WHERE ";
+	query += "nombre LIKE '%"+array+"%'";	
+	/*for(var i = 0; i<array.length; i++){
+		query += "nombre LIKE '%"+array[i]+"%'";
+		if(i!=array.length-1){
+			query += " AND ";
+		}
+	}*/
+	console.log(query);
 	req.getConnection(function(err, connection){
 		//SELECT * FROM belita2.producto WHERE producto.nombre LIKE '%poleron%' AND producto.nombre LIKE '%hombre%';
 		connection.query(query, function(err, rows){
 			if(err)
 				console.log("Error Selecting : %s", err);
-			res.render('stock_table_nombre', {page_title: "Stock de Productos", busqueda: array ,data: rows, login_admin: req.session.login_admin});
+			res.render('stock_table_nombre_render', {page_title: "Stock de Productos", busqueda: array ,data: rows});
 		});
 	});
 }
-
-
 
 
 exports.findImport = function(req, res){
@@ -701,4 +714,66 @@ exports.search_nombre = function(req, res){
 			res.render('show_product_found', {prod: productos});
 		});
 	});
+}
+
+
+exports.inventory_product = function(req, res){
+	req.session.arrayInventory = [];
+	res.render('inventory_product' , {page_title: 'Ingresar productos'});
+}
+
+exports.regist_product = function(req, res){
+	var input = JSON.parse(JSON.stringify(req.body));
+	req.session.arrayInventory[req.session.arrayInventory.length] = input;
+	req.getConnection(function(err, connection){
+		connection.query("SELECT * FROM producto WHERE id_producto = ?", input.id_producto, function(err, prod){
+			if(err){console.log("Error Selecting : %s", err);}
+			if(prod.length > 0){
+				console.log("UPDATE");
+				connection.query("UPDATE producto SET nombre=?, cantidadtotal=cantidadtotal + ?, precioactual=? WHERE id_producto=?",[input.nombre, input.cantidad, input.precio, input.id_producto],
+					function(err, rows){
+						if(err){console.log("Error Selecting : %s", err);}
+						res.redirect('/tabla_inventory');
+					});
+			}
+			else{
+				console.log("INSERT");
+				var objeto = {
+					id_producto: input.id_producto,
+					nombre: input.nombre,
+					cantidadtotal: input.cantidad,
+					precioactual: input.precio
+				}
+				connection.query("INSERT INTO producto SET ?", objeto, function(err, rows){
+					if(err){console.log("Error Selecting : %s", err);}
+					res.redirect('/tabla_inventory');					
+				});
+			}
+		});
+	});
+	
+}
+
+
+exports.remove_product_inventory = function(req, res){
+	var input = JSON.parse(JSON.stringify(req.body));
+	req.session.arrayInventory[input.indice] = null;
+	req.getConnection(function(err, connection){
+		connection.query("UPDATE producto SET cantidadtotal = cantidadtotal - ? WHERE id_producto = ?", [input.cantidad, input.id_producto],function(err, rows){
+			if(err){console.log("Error Selecting : %s", err);}
+			res.redirect('/tabla_inventory');	
+		});
+	});
+}
+
+
+exports.tabla_inventory = function(req, res){
+	console.log("renderizando tabla");
+	console.log(req.session.arrayInventory);
+	res.render('tabla_inventory', {data: req.session.arrayInventory});
+}
+
+exports.guardar_inventory = function(req, res){
+	delete req.session.arrayInventory;
+	res.redirect('/inventory_product');
 }
