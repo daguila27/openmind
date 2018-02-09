@@ -1,7 +1,7 @@
 
 
-<div class="panel panel-default">
-<table id="tablaStock" class="table table-striped table-bordered table-hover" cellspacing="0" width="100%">
+<div class="panel panel-success">
+  <table id="tablaStock" class="table table-striped table-bordered table-hover" cellspacing="0" width="100%">
 
 
           <thead>
@@ -26,7 +26,8 @@
                   <!--<form action="/product_details" method='post'>
                     <input type="hidden" name="idProducto" id="idProducto<%=i%>" value="<%=data[i].id_producto%>">
                   </form>-->
-                    <button class='btn btn-default editProducto' type="button" style="font-family: 'Oswald'" data-top="<%=i%>" >
+                    <button class='btn btn-primary editProducto' data-toggle="modal" data-target="#editarModal" type="button" data-cod="<%=data[i].id_producto%>" data-name="<%=data[i].nombre%>" data-precio="<%=data[i].precioactual%>" data-cant="<%=data[i].cantidadtotal%>" 
+                    style="font-family: 'Oswald'" >
                       <span class='glyphicon glyphicon-pencil' aria-hidden='true'></span>
                       Ajustes Stock
                     </button>
@@ -61,9 +62,9 @@
       	<div style="width: 10%;" class="option">
           <form action="/product_details" method='post'>
             <input type="hidden" name="idProducto" id="idProducto<%=i%>" value="<%=data[i].id_producto%>">
-            <!--<button class='btn btn-default' type="submit">
+            <button class='btn btn-default' type="submit">
             	<span class='glyphicon glyphicon-option-horizontal' aria-hidden='true'></span>
-            </button>-->
+            </button>
           </form>
             <button class='btn btn-info editProducto' type="button" style="font-family: 'Oswald'" data-top="<%=i%>" >
               <span class='glyphicon glyphicon-pencil' aria-hidden='true'></span>
@@ -81,7 +82,44 @@
 
 
 
-<div class="container_details" style="background-color: rgb(235, 235, 235); position: absolute; right: 15%; top: -200%; transition: 1s; width: 70%; padding: 10px; box-shadow: 10px 10px 5px #888888; border: solid 1px; ">
+
+<!-- Modal -->
+<div class="modal fade" id="editarModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Editar producto: <b class="codeProducto"></b></h4>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="codigo_producto">
+        <label>Ingrese nuevo nombre:</label>
+          <div class="input-group">
+              <span class="input-group-addon" id="basic-addon1"></span>
+              <input id="newNombre" type="text" class="form-control" placeholder="Nombre" aria-describedby="basic-addon1">
+          </div>
+          <label>Ingrese nuevo stock:</label>
+          <div class="input-group">
+              <span class="input-group-addon" id="basic-addon1"></span>
+              <input id="newStock" type="text" class="form-control" placeholder="Cantidad" aria-describedby="basic-addon1">
+          </div>
+          <label>Ingrese nuevo precio:</label>
+          <div class="input-group">
+              <span class="input-group-addon" id="basic-addon1"></span>
+              <input  id="newPrecio" type="text" class="form-control" placeholder="Precio" aria-describedby="basic-addon1">
+          </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary ok" data-dismiss="modal">Guardar Cambios</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<!--<div class="container_details" style="background-color: rgb(235, 235, 235); position: absolute; right: 15%; top: -200%; transition: 1s; width: 70%; padding: 10px; box-shadow: 10px 10px 5px #888888; border: solid 1px; ">
   <h4>Editar producto: <b class="codeProducto"></b></h4>
   <div class="container" style="position: relative; width: 97%; margin-left: 3%;">
       <input type="hidden" id="codigo_producto">
@@ -109,7 +147,7 @@
       <button class='btn btn-default'><span class='glyphiconglyphicon-th-list' aria-hidden='true'></span>Cancelar</button>
     </div>
   </div>
-</div>
+</div>-->
 
 
 
@@ -117,18 +155,26 @@
 
 
 <script type="text/javascript">
-
-    setDataTable("#tablaStock");
+    function setModalInfo(cod, name, precio, cant){
+      $("#newNombre").val(name);
+      $("#newStock").val(cant);
+      $("#newPrecio").val(precio);
+      $("#codigo_producto").val(cod);
+      $(".codeProducto").html(cod);
+    }
       $('.editProducto').on('click', function(e){
           e.preventDefault();  
-          var position = $(this).data('top');
-          var top = 100 + position*90;
-          $('.container_details').css('top', top+'px');
-          console.log($(this).data('codigo'));
-          var id = $("#idProducto"+position).val();
-          $.ajax({
+          //var position = $(this).data('top');
+          //var top = 100 + position*90;
+          //$('.container_details').css('top', /*top+*/'200px');
+          console.log($(this).data('cod'));
+          //var id = $("#idProducto"+position).val();
+          var id = $(this).data('cod');
+
+          setModalInfo($(this).data('cod'),$(this).data('name'),$(this).data('precio'),$(this).data('cant') );
+          /*$.ajax({
                 type: 'GET',
-                url: '/pull_data_product/'+$("#idProducto"+position).val(),
+                url: '/pull_data_product/'+$(this).data('cod'),
                 success: function(producto){
                   console.log(producto);
                   var info = producto.split('&');
@@ -138,7 +184,7 @@
                   $("#codigo_producto").val(id);
                   $(".codeProducto").html(id);
                 }
-          });
+          });*/
       });
       $('.ok').on('click', function(e){
               e.preventDefault();
@@ -154,16 +200,15 @@
                 success: function(data){
                       $('.container_stock').html(data);  
                       $("#codigo_producto").val('');
-                      $('.container_details').css('top', '-200%');
-                      alert("Producto editado correctamente");
+                      //$('.container_details').css('top', '-200%');
+                      //alert("Producto editado correctamente");
                 }
               });
       });
 
-      $('.cancel').on('click', function(e){
-              e.preventDefault();
-              $('.container_details').css('top', '-200%');
-                
+      $(document).ready(function(){
+        setDataTable("#tablaStock");
       });
+
 
 </script>
