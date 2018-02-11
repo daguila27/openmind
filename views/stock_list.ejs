@@ -14,7 +14,7 @@ else{%>
 
 
 <div class="col-md-12">
-	<div class="input-group">
+	<!--<div class="input-group">
 			  <span class="input-group-addon" id="basic-addon1"></span>
 			  <input type="text" id="CodigoProducto" class="form-control" placeholder="Codigo de barra" aria-describedby="basic-addon1">
 	</div>
@@ -29,27 +29,168 @@ else{%>
           	<button style="position: relative; margin-left: 93%;margin-top: 10px" type="submit" id="submit" class="btn btn-primary">
           		<span class='glyphicon glyphicon-search' aria-hidden='true' style="margin-right: 5px"></span>Buscar
           	</button>
-    </div> 
+    </div> -->
 
-		<div class="container_stock"></div>
-	
+
+    <div class="panel panel-success container_stock" style="padding: 10px">
+  		<table id="tablaStock" class="table table-striped table-bordered table-hover" cellspacing="1" width="100%">
+
+
+          <thead>
+              <tr>
+                  <th>Detalle</th>
+                  <th>Codigo</th>
+                  <th>Stock</th>
+                  <th>Precio</th>
+                  <th></th>
+              </tr>
+          </thead>
+          <tbody>
+          <%if(data.length > 0){
+            for(var i=0; i < data.length; i++){%>
+            <tr>
+              <td id="rnam<%=i%>" data-inf="<%=data[i].nombre%>"><%=data[i].nombre%></td>
+              <td id="rcod<%=i%>" data-inf="<%=data[i].id_producto%>"><%=data[i].id_producto%></td>
+              <td id="rcan<%=i%>" data-inf="<%=data[i].cantidadtotal%>"><%=data[i].cantidadtotal%></td>
+              <td id="rpre<%=i%>" data-inf="<%=data[i].precioactual%>">$<%=data[i].precioactual%></td>
+              <td>
+                  <!--<form action="/product_details" method='post'>
+                    <input type="hidden" name="idProducto" id="idProducto<%=i%>" value="<%=data[i].id_producto%>">
+                  </form>-->
+                    <button class='btn btn-primary editProducto' data-toggle="modal" data-target="#editarModal" type="button" data-cod="<%=data[i].id_producto%>" data-name="<%=data[i].nombre%>" data-precio="<%=data[i].precioactual%>" data-cant="<%=data[i].cantidadtotal%>" data-top="<%=i%>" style="font-family: 'Oswald'">
+                      <span class='glyphicon glyphicon-pencil' aria-hidden='true'></span>
+                      <!--Ajustes Stock-->
+                    </button>
+              </td>
+            </tr>
+          <%}
+          }
+          else{%>
+            <tr>
+              No hay producto registrados.
+            </tr>
+          <%}%> 
+          </tbody>
+  </table>
+</div>
+
+
+</div>
+
+
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="editarModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Editar producto: <b class="codeProducto"></b></h4>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="codigo_producto">
+        <label>Ingrese nuevo nombre:</label>
+          <div class="input-group">
+              <span class="input-group-addon" id="basic-addon1"></span>
+              <input id="newNombre" type="text" class="form-control" placeholder="Nombre" aria-describedby="basic-addon1">
+          </div>
+          <label>Ingrese nuevo stock:</label>
+          <div class="input-group">
+              <span class="input-group-addon" id="basic-addon1"></span>
+              <input id="newStock" type="text" class="form-control" placeholder="Cantidad" aria-describedby="basic-addon1">
+          </div>
+          <label>Ingrese nuevo precio:</label>
+          <div class="input-group">
+              <span class="input-group-addon" id="basic-addon1"></span>
+              <input  id="newPrecio" type="text" class="form-control" placeholder="Precio" aria-describedby="basic-addon1">
+          </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary ok" data-dismiss="modal">Guardar Cambios</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 
 <script type="text/javascript">
+
+	var indRow;
+	function setModalInfo(cod, name, precio, cant){
+      $("#newNombre").val(name);
+      $("#newStock").val(cant);
+      $("#newPrecio").val(precio);
+      $("#codigo_producto").val(cod);
+      $(".codeProducto").html(cod);
+    }
+      $('.editProducto').on('click', function(e){
+          e.preventDefault();  
+          //var position = $(this).data('top');
+          //var top = 100 + position*90;
+          //$('.container_details').css('top', /*top+*/'200px');
+          console.log($(this).data('cod'));
+          //var id = $("#idProducto"+position).val();
+          var id = $(this).data('cod');
+          indRow = $(this).data('top');
+
+          setModalInfo($(this).data('cod'),$("#rnam"+indRow).data('inf'),$("#rpre"+indRow).data('inf'),$("#rcan"+indRow).data('inf') );
+          /*$.ajax({
+                type: 'GET',
+                url: '/pull_data_product/'+$(this).data('cod'),
+                success: function(producto){
+                  console.log(producto);
+                  var info = producto.split('&');
+                  $("#newNombre").val(info[0]);
+                  $("#newStock").val(info[1]);
+                  $("#newPrecio").val(info[2]);
+                  $("#codigo_producto").val(id);
+                  $(".codeProducto").html(id);
+                }
+          });*/
+      });
+      $('.ok').on('click', function(e){
+              e.preventDefault();
+              $.ajax({
+                type: 'POST',
+                data: {
+                  'codigo': $("#codigo_producto").val(),
+                  'nombre': $("#newNombre").val(),
+                  'stock': $("#newStock").val(),
+                  'precio': $("#newPrecio").val()
+                },
+                url: '/editar_producto',
+                success: function(data){
+                      //$('.container_stock').html(data); 
+                      $("#codigo_producto").val('');
+                      $("#rpre"+indRow).html("$"+$("#newPrecio").val());
+                      $("#rnam"+indRow).html($("#newNombre").val());
+                      $("#rcan"+indRow).html($("#newStock").val());
+
+                      $("#rpre"+indRow).data('inf',$("#newPrecio").val());
+                      $("#rnam"+indRow).data('inf',$("#newNombre").val());
+                      $("#rcan"+indRow).data('inf',$("#newStock").val());
+                      //$('.container_details').css('top', '-200%');
+                      //alert("Producto editado correctamente");
+                }
+              });
+      });
+
   $(document).ready(function(){
 
 
 
 
-  		$.ajax({
+  		/*$.ajax({
 				type: 'GET',
 		  		url: '/show_product',
 		  		success: function(data){
 		  				$('.container_stock').html(data);
 		  		}
-		});
-  		$('#CodigoProducto').focus();
+		});*/
+  		//$('#CodigoProducto').focus();
 
 
 
@@ -85,7 +226,15 @@ else{%>
 		  		});
 	  		}
   		});
+
+
+  		setDataTable("#tablaStock");
   });
+
+
+   
+
+
 
 </script>
 

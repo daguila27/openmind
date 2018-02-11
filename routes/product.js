@@ -326,7 +326,18 @@ exports.show = function(req, res){
 
 
 exports.list = function(req, res){
-	res.render('stock_list',{page_title:"Stock de productos", login_admin: req.session.login_admin});				
+
+	req.getConnection(function(err,connection){
+					 connection.query('SELECT * FROM producto',function(err,rows)
+						{
+								if(err)
+										console.log("Error Selecting : %s ",err );
+								//console.log(rows);	
+								//res.render('stock_table', {data: rows});				
+						 		res.render('stock_list',{page_title:"Stock de productos", data: rows, login_admin: req.session.login_admin});				
+
+						 });
+				});
 }
 
 

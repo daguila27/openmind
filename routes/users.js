@@ -17,10 +17,10 @@ exports.login = function(req, res){
             req.session.login_admin = true;
             console.log(req.session);
             if(req.session.sellerData){
-              res.redirect('/facture_list');
+              res.redirect('/new_sale');
             }
             else{
-              req.session.nexturl = '/facture_list';
+              req.session.nexturl = '/new_sale';
               res.redirect('/def_turno');
             }
           }
