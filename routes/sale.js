@@ -139,7 +139,6 @@ exports.check = function(req, res){
 
 
 exports.add_product = function(req, res){
-	// 00 00005 000002 000
 	var input = JSON.parse(JSON.stringify(req.body));
 	var codigo = input.codigo;
 	req.getConnection(function(err, connection){
@@ -157,7 +156,8 @@ exports.add_product = function(req, res){
 						nombre: rows[0].nombre,
 						precio: rows[0].precioactual,
 						cantidad: 1,
-						precioFinal: rows[0].precioactual
+						precioFinal: rows[0].precioactual,
+						tipo: rows[0].tipo
 					};
 					req.session.CostoTotal += rows[0].precioactual;
 					res.redirect('/render_sale');
@@ -167,7 +167,9 @@ exports.add_product = function(req, res){
 						if(aux[i] != null){
 							if(aux[i].id_producto == rows[0].id_producto){
 								req.session.saleProducts[i].cantidad += 1;
-								req.session.saleProducts[i].precioFinal += rows[0].precioactual;
+								if(rows[0].tipo == 'unidad'){
+									req.session.saleProducts[i].precioFinal += rows[0].precioactual;
+								}
 								req.session.CostoTotal += rows[0].precioactual;
 								res.redirect('/render_sale');
 								break;
@@ -181,7 +183,8 @@ exports.add_product = function(req, res){
 									nombre: rows[0].nombre,
 									precio: rows[0].precioactual,
 									cantidad: 1,
-									precioFinal: rows[0].precioactual
+									precioFinal: rows[0].precioactual,
+									tipo: rows[0].tipo
 								}
 								req.session.saleProducts[i+1] = data;
 								req.session.CostoTotal += rows[0].precioactual;
@@ -205,15 +208,26 @@ exports.refreshTabla = function(req, res){
 	var input = JSON.parse(JSON.stringify(req.body));
 	var id = input.id_producto;
 	var productos = req.session.saleProducts;
+	console.log(input);
+	if(input.cantidad == ''){input.cantidad=0;}
+	var tipo = input.tipo;
 	req.session.CostoTotal = 0;
 	var precioFinal = 0;
 	for(var i=0; i<productos.length; i++){
 		if(productos[i]!=null){
 			if(productos[i].id_producto == id){
-				req.session.saleProducts[i].cantidad = input.cantidad;
-				req.session.saleProducts[i].precioFinal = input.cantidad*productos[i].precio;
-				req.session.CostoTotal += input.cantidad*productos[i].precio;
-				precioFinal = input.cantidad*productos[i].precio;
+				if(tipo == 'granel'){
+					req.session.saleProducts[i].precioFinal = parseInt(input.cantidad);
+					precioFinal = parseInt(input.cantidad);
+					req.session.CostoTotal += parseInt(input.cantidad);
+				}
+				else{
+					req.session.saleProducts[i].cantidad = input.cantidad;
+					req.session.saleProducts[i].precioFinal = input.cantidad*productos[i].precio;
+					precioFinal = input.cantidad*productos[i].precio;
+					req.session.CostoTotal += parseInt(input.cantidad)*parseInt(productos[i].precio);
+				}
+				//tipo = req.session.saleProducts[i].tipo;
 			}
 			else{
 				req.session.CostoTotal += productos[i].precioFinal;
@@ -221,7 +235,7 @@ exports.refreshTabla = function(req, res){
 		}
 		if(i==productos.length-1){
 			console.log(req.session.saleProducts);
-			var info = req.session.CostoTotal.toString()+"-"+precioFinal.toString();
+			var info = req.session.CostoTotal.toString()+"-"+precioFinal.toString()+"-"+tipo;
 			res.send(info);
 		}
 	}

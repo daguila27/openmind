@@ -22,8 +22,15 @@
 
         <div class="input-group">
           <span class="input-group-addon" id="basic-addon1"></span>
-          <input id="PrecioProduct" type="number" class="form-control" placeholder="Precio por unidad" aria-describedby="basic-addon1">
+          <input id="PrecioProduct" type="number" class="form-control" placeholder="Precio por unidad/kilo" aria-describedby="basic-addon1">
         </div>
+        <div class="form-group">
+		  <label for="TipoProduct">Tipo:</label>
+		  <select class="form-control" id="TipoProduct">
+		    <option value="unidad">Unidad</option>
+		    <option value="granel">Granel</option>
+		  </select>
+		</div>
         <div style="width: 100%">
           <button type="button" class="btn btn-success regist_button" style="margin: 10px">Registrar</button>
         </div>  
@@ -48,10 +55,11 @@
         var nombre = $('#NombreProduct').val().toLowerCase();
         var codigo = $('#CodigoProduct').val();
         var precio = $('#PrecioProduct').val();
+        var tipo = $('#TipoProduct').val(); 
 		$.ajax({
 			type: 'POST',
 			url: '/regist_product',
-			data: {id_producto: codigo, cantidad: cantidad, nombre: nombre, precio: precio},
+			data: {id_producto: codigo, cantidad: cantidad, nombre: nombre, precio: precio, tipo: tipo},
 			success: function(data){
 				$(".tabla").html(data);
 			}
@@ -60,6 +68,7 @@
         $('#NombreProduct').val('');
         $('#CodigoProduct').val('');
         $('#PrecioProduct').val('');
+        $('#TipoProduct').val('unidad');
 		$('#CodigoProduct').focus();	
 	});
 	$("#CodigoProduct").on('keyup', function(e){
