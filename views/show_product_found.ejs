@@ -16,7 +16,7 @@
 
 	<%if(prod.length > 0){
 			for(var a=0; a < prod.length; a++){%>
-				<div class="col-md-6 item_nombre" data-codigo="<%= prod[a].id_producto%>">
+				<div class="col-md-6 item_nombre" id="<%= prod[a].id_producto%>">
 					<div><%= prod[a].nombre%></div> <div>Precio: $ <%= prod[a].precioactual%></div>		
 				</div>
 	<%}
@@ -25,7 +25,7 @@
 <script type="text/javascript">
 	$(".item_nombre").on('click', function(e){
 			e.preventDefault();
-			var codigo = $(this).data('codigo');
+			var codigo = $(this).attr('id').toString();
 			$.ajax({
 							type: 'POST',
 							data: {'codigo': codigo},
