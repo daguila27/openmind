@@ -64,26 +64,66 @@ else{%>
             </form>
         </div>
     </div>
-
-
-  <div class="table-responsive">
-      <table class="table table-striped table-bordered table-hover" >
-              <tr id="head">
-                <td><b>Detalle de producto</b></td>
-                <td><b>Cantidad</b></td>
-                <td><b>Precio Unitario</b></td>
-                <td><b>Precio Final</b></td>
-              </tr>
-              <%for(var i=0; i < data.length; i++){%>
-                <tr class="fila" id="fila<%=i%>">
-                  <td><%= data[i].nombre%></td>
-                  <td class="cant" data-cant="<%=data[i].total%>" ><%= data[i].total%></td>  
-                  <td class="precio_u" data-precio="<%= data[i].precio_u%>">$<%= data[i].precio_u%></td>
-                  <td class="precio_t"></td>
-                </tr>
-              <%}%> 
-      </table>
+<div class="row">
+  <div class="col-md-offset-1 col-md-5">
+    <div class="panel panel-info">
+    <div class="panel-heading" style="display: flex;">
+      <h2>Unitarios</h2>
+      <div class="panelitem" style="margin-top: 10px; margin-left: 5%"><p><strong>Monto Total:</strong></p><p class="monto-unidad"  style="margin-top: 2px"></p></div>
+      <div class="panelitem" style="margin-top: 10px; margin-left: 5%"><p><strong>Total Productos:</strong></p><p class="monto-productos"  style="margin-top: 2px"></p></div>
+    </div>
+    <div class="panel-body"> 
+      <div class="table-responsive">
+          <table class="table table-striped table-bordered table-hover" >
+                  <tr id="head">
+                    <td><b>Detalle de producto</b></td>
+                    <td><b>Cantidad</b></td>
+                    <td><b>Precio Unitario</b></td>
+                    <td><b>Precio Final</b></td>
+                  </tr>
+                  <%
+                  var lastId = data.length;
+                  for(var i=0; i < data.length; i++){%>
+                    <tr class="fila unidad" id="fila<%=i%>">
+                      <td><%= data[i].nombre%></td>
+                      <td class="cant" data-cant="<%=data[i].total%>" ><%= data[i].total%></td>  
+                      <td class="precio_u" data-precio="<%= data[i].precio_u%>">$<%= data[i].precio_u%></td>
+                      <td class="precio_t"></td>
+                    </tr>
+                  <%}%> 
+          </table>
+      </div>
+      </div>
   </div>
+</div>
+
+<div class="col-md-5">
+  <div class="panel panel-success">
+    <div class="panel-heading" style="display: flex;">
+      <h2>Granel</h2>
+      <div class="panelitem" style="margin-top: 10px; margin-left: 5%"><p><strong>Monto Total:</strong></p><p class="monto-granel"  style="margin-top: 2px"></p></div>
+    </div>
+    <div class="panel-body">
+      <div class="table-responsive">
+            <table class="table table-striped table-bordered table-hover" >
+                    <tr id="head">
+                      <td><b>Detalle de producto</b></td>
+                      <td><b>Precio Total</b></td>
+                    </tr>
+                    <%for(var i=0; i < data2.length; i++){%>
+                      <tr class="fila granel" id="fila<%=i+lastId%>">
+                        <td><%= data2[i].nombre%></td>
+                        <td style="display: none" class="cant" data-cant="<%=data2[i].total%>" ><%= data2[i].total%></td>  
+                        <td style="display: none" class="precio_u" data-precio="<%= data2[i].precio_u%>">$<%= data2[i].precio_u%></td>
+                        <td class="precio_t"></td>
+                      </tr>
+                    <%}%> 
+            </table>
+        </div>
+      </div>
+  </div>
+</div>
+</div>
 <!--<div class="row">
   <div class="col-md-10 col-md-offset-1 list-group">
     <div class="list-group-item">
@@ -104,6 +144,9 @@ else{%>
     var cantidad;
     var precio_u;
     var monto_inicial = parseInt($("#caja-inicial").val());
+    var monto_unidad = 0;
+    var monto_granel = 0;
+    var monto_productos = 0;
     var caja_total = 0;
     $(".fila").each(function(){
       id = $(this).attr('id'); 
@@ -112,6 +155,21 @@ else{%>
       $("#"+id+" .precio_t").html("$"+parseInt(cantidad*precio_u).toString());
       caja_total += (cantidad*precio_u);
     });
+    $(".unidad").each(function(){
+        id = $(this).attr('id');
+        cantidad = $("#"+id+" .cant").data('cant');
+        precio_u = $("#"+id+" .precio_u").data('precio');
+        monto_unidad += parseInt(cantidad*precio_u);
+        monto_productos += parseInt(cantidad);
+    });
+    $(".granel").each(function(){
+        id = $(this).attr('id');
+        precio_u = $("#"+id+" .precio_u").data('precio');
+        monto_granel += parseInt(precio_u);
+    });
+    $(".monto-unidad").html("$"+monto_unidad);
+    $(".monto-granel").html("$"+monto_granel);
+    $(".monto-productos").html(monto_productos);
     $(".cash").html("$"+caja_total);
     $("#caja-final").val(parseInt(caja_total + monto_inicial));
     recalcular(monto_inicial, caja_total);

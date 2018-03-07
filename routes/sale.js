@@ -663,21 +663,32 @@ exports.finish_sale = function(req, res){
 			for(var i=0; i<productos.length; i++){
 				if(productos[i] != null){
 					connection.query('UPDATE producto SET cantidadtotal = cantidadtotal - ? WHERE id_producto = ?', [productos[i].cantidad, productos[i].id_producto], function(err, rows){
-						if(err){
-							console.log("Error Selecting : %s", err);
-						}
-					});
+							if(err){
+								console.log("Error Selecting : %s", err);
+							}
+						});
 					/*connection.query('UPDATE productofactura SET cantidad = cantidad - ? WHERE id_producto = ? AND id_factura = ?', [productos[i].cantidad, productos[i].id_producto, productos[i].id_factura], function(err, rows){
 						if(err)
 							console.log("Error Selecting : %s", err);
 
 					});*/
-					var dataProduct = {
-						id_venta: insertId,
-						codigo_producto: productos[i].id_producto,
-						precio: productos[i].precio,
-						cantidad: productos[i].cantidad
-					};
+					if(productos[i].tipo == 'unidad'){
+						var dataProduct = {
+							id_venta: insertId,
+							codigo_producto: productos[i].id_producto,
+							precio: productos[i].precio,
+							cantidad: productos[i].cantidad
+						};
+					}
+					else{
+						var dataProduct = {
+							id_venta: insertId,
+							codigo_producto: productos[i].id_producto,
+							precio: productos[i].precioFinal,
+							cantidad: 1
+						};	
+					}
+					
 					/*if(productos[i].precioFinal || productos[i].precioFinal == 0){
 						var dataProduct = {
 							id_venta: insertId,
@@ -996,11 +1007,16 @@ exports.informeTurno = function(req, res){
 			connection.query("SELECT caja.*,vendedor.nombreVendedor as nombre FROM caja left join vendedor on caja.codturno=vendedor.rutVendedor  WHERE idcaja=(SELECT MAX(idcaja) FROM caja)", function(err, caja){
 				connection.query("SELECT info.codigo_producto, info.fecha, info.precio AS precio_u, producto.nombre, SUM(info.cantidad) as total"
 						+"  FROM (SELECT ventaproducto.*, venta.fecha FROM ventaproducto LEFT JOIN venta ON ventaproducto.id_venta = venta.id_venta WHERE venta.rut_vendedor = ? AND venta.fecha like '"+date+"%' ORDER BY ventaproducto.codigo_producto) as info "
-						+"LEFT JOIN producto ON info.codigo_producto = producto.id_producto GROUP BY info.codigo_producto", [req.session.sellerData.rutVendedor], function(err, inf){
+						+"LEFT JOIN producto ON info.codigo_producto = producto.id_producto WHERE producto.tipo='unidad' GROUP BY info.codigo_producto", [req.session.sellerData.rutVendedor], function(err, inf){
 							if(err) throw err;
 							console.log(inf);
-							res.render('informe_turno', {page_title: "Informe de Ventas", login_admin: req.session.login_admin, data: inf, caja: caja[0] });
-				});
+							connection.query("select ventaproducto.codigo_producto, venta.fecha, producto.nombre, ventaproducto.cantidad as total,sum(ventaproducto.precio) as precio_u from ventaproducto left join venta on ventaproducto.id_venta=venta.id_venta left join producto "
+								+"on producto.id_producto = ventaproducto.codigo_producto where venta.rut_vendedor = ? and producto.tipo='granel' "
+								+"AND venta.fecha like '"+date+"%' group by ventaproducto.codigo_producto", [req.session.sellerData.rutVendedor], function(err, granel){
+									if(err) throw err;
+									res.render('informe_turno', {page_title: "Informe de Ventas", login_admin: req.session.login_admin, data: inf, data2: granel,caja: caja[0] });
+								});
+							});
 			});
 	});
 }

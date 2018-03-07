@@ -789,3 +789,21 @@ exports.guardar_inventory = function(req, res){
 	delete req.session.arrayInventory;
 	res.redirect('/inventory_product');
 }
+
+
+exports.notif_stock = function(req, res){
+	/*var productos = req.session.saleProduct;
+	var query = '';
+	for(var t=0; t<productos.length; t++){
+		query += "SELECT * FROM producto WHERE id_producto="+productos[i].codigo_producto;
+	}*/
+	req.getConnection(function(err, connection){
+		if(err){console.log("Error Selecting : %s", err);}
+		connection.query("UPDATE producto SET cantidadtotal = 0 WHERE nombre ='pan'", function(err, updata){
+			if(err){console.log("Error Selecting : %s", err);}
+			console.log(updata);
+			res.redirect('new_sale');
+		});
+	});
+	//res.redirect('/new_sale');
+}

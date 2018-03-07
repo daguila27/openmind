@@ -6,7 +6,41 @@
 ================================================== -->
 <!-- Placed at the end of the document so the pages load faster -->
 
-
+<!-- Modal -->
+<div class="modal fade" id="editarModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Editar producto: <b class="codeProducto"></b></h4>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="idnotificacion">
+        <input type="hidden" id="codigo_producto">
+        <input type="hidden" id="tipo_view">
+        <label>Ingrese nuevo nombre:</label>
+          <div class="input-group">
+              <span class="input-group-addon" id="basic-addon1"></span>
+              <input id="newNombre" type="text" class="form-control" placeholder="Nombre" aria-describedby="basic-addon1">
+          </div>
+          <label>Ingrese nuevo stock:</label>
+          <div class="input-group">
+              <span class="input-group-addon" id="basic-addon1"></span>
+              <input id="newStock" type="text" class="form-control" placeholder="Cantidad" aria-describedby="basic-addon1">
+          </div>
+          <label>Ingrese nuevo precio:</label>
+          <div class="input-group">
+              <span class="input-group-addon" id="basic-addon1"></span>
+              <input  id="newPrecio" type="text" class="form-control" placeholder="Precio" aria-describedby="basic-addon1">
+          </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary ok" data-dismiss="modal">Guardar Cambios</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 
 <!-- DataTables JavaScript -->
@@ -45,7 +79,61 @@
                 }
         });
   }
+  function setModalInfo(cod, name, precio, cant, tipo){
+      $("#newNombre").val(name);
+      $("#newStock").val(cant);
+      $("#newPrecio").val(precio);
+      $("#codigo_producto").val(cod);
+      $("#tipo_view").val(tipo);
+      $(".codeProducto").html(cod);
+    }
 
+      $('.ok').on('click', function(e){
+              e.preventDefault();
+              $.ajax({
+                type: 'POST',
+                data: {
+                  'codigo': $("#codigo_producto").val(),
+                  'nombre': $("#newNombre").val(),
+                  'stock': $("#newStock").val(),
+                  'precio': $("#newPrecio").val()
+                },
+                url: '/editar_producto',
+                success: function(data){
+                      //$('.container_stock').html(data); 
+                      $("#codigo_producto").val('');
+                      if($("#tipo_view").val() == 'stock'){
+                        $("#rpre"+indRow).html("$"+$("#newPrecio").val());
+                        $("#rnam"+indRow).html($("#newNombre").val());
+                        $("#rcan"+indRow).html($("#newStock").val());
+
+                        $("#rpre"+indRow).data('inf',$("#newPrecio").val());
+                        $("#rnam"+indRow).data('inf',$("#newNombre").val());
+                        $("#rcan"+indRow).data('inf',$("#newStock").val());
+                      }
+                      else{
+                        $.ajax({
+                            type: 'POST',
+                            data: {idnotif: $("#idnotificacion").val()},
+                            url: '/check_notif',
+                            success: function(data){
+                                $(".notificaciones").html(data);
+                            }
+                        });
+                      }
+                      //$('.container_details').css('top', '-200%');
+                      //alert("Producto editado correctamente");
+                }
+              });
+      });
+
+  $.ajax({
+    type: 'GET',
+    url: '/render_notif',
+    success: function(data){
+      $(".notificaciones").html(data);
+    }
+  });
 
   $("form#turnoForm").submit(function(e){
       e.preventDefault();
