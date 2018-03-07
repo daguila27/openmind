@@ -247,6 +247,44 @@ CREATE TABLE `ventaproducto` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CREATE TABLE notif(
+  idnotif int(11) not null auto_increment,
+    mensaje varchar(200) null default '',
+    fecha datetime null,
+    id_producto varchar(45) not null,
+    ok boolean default false,
+    primary key(idnotif)
+);
+
+
+delimiter |
+
+CREATE TRIGGER notifStock BEFORE UPDATE ON producto
+  FOR EACH ROW
+  BEGIN
+    IF NEW.cantidadtotal <= 0 THEN
+        INSERT INTO notif (mensaje,fecha, id_producto) VALUES (concat('Se acabo el stock de ',NEW.nombre), now() , new.id_producto);
+  END IF;
+  END;
+|
+
+delimiter ;
 --
 -- Dumping data for table `ventaproducto`
 --

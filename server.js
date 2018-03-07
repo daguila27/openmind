@@ -84,7 +84,9 @@ app.get('/setPrecioB', index.setPrecioB);
 app.post('/login', user.login);
 app.get('/guest_login', user.user_login);
 app.post('/cambiar_contrasena', user.cambiar_contrasena);
-
+app.get('/render_notif', user.render_notif);
+app.post('/check_notif', user.check_notif);
+app.post('/inv_notif', user.inv_notif);
 
 app.get('/providers', provider.list);
 app.post('/save_provider', provider.save_provider);
@@ -168,6 +170,7 @@ app.get('/tabla_inventory', product.tabla_inventory);
 app.post('/regist_product', product.regist_product);
 app.post('/remove_product_inventory', product.remove_product_inventory);
 app.get('/guardar_inventory', product.guardar_inventory);
+app.get('/notif_stock', product.notif_stock);
 
 
 app.post('/search_tag', tag.search);

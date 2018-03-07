@@ -1,0 +1,77 @@
+    <style type="text/css">
+        .mens a:hover{
+            cursor: default;
+        }
+    </style>
+    <%if(notif.length > 0){
+        for(var u=0; u < notif.length; u++){
+            var hora = notif[u].fecha.toLocaleString();
+            hora = hora.split(" ")[1].split(':');
+            hora = hora[0]+":"+hora[1];
+            %>
+            <li class="mens">
+                <a href="#">
+                    <div>
+                            <strong>Producto faltante:</strong>
+                            <span class="pull-right text-muted">
+                            <em><%= hora%></em>
+                            </span>
+                    </div>
+                    <div style="margin: 5px"><%=notif[u].mensaje%></div>
+                    <div>
+                        <button type="button" class="btn btn-primary" onclick="okNotif(this)" data-id="<%=notif[u].idnotif%>">Ok</button>
+                        <button type="button" class="btn btn-success" onclick="invNotif(this)" data-id="<%=notif[u].idnotif%>" data-toggle="modal" data-target="#editarModal" >Inventario</button>
+                    </div>
+                </a>
+            </li>
+            <li class="divider"></li>
+        <%}%>
+                    <li>
+                                <a class="text-center" href="#">
+                                    <strong>Read All Messages</strong>
+                                    <i class="fa fa-angle-right"></i>
+                                </a>
+                            </li>
+    <%}
+    else{%>
+        <li class="mens">
+            <a href="#">
+                <div>
+                        <strong>No hay notificaciones</strong>
+                        <span class="pull-right text-muted">
+                        <em>Ahora mismo</em>
+                        </span>
+                </div>
+                <div>No tiene notificaciones.</div>
+            </a>
+        </li>
+    <%}%>
+<script type="text/javascript">
+    if(<%=notif.length%> > 0){
+        $(".badge-notificaciones").html(<%=notif.length%>);
+    }
+    else{
+        $(".badge-notificaciones").html('');    
+    }
+    function okNotif(yo){
+        $.ajax({
+            type: 'POST',
+            data: {idnotif: $(yo).data('id')},
+            url: '/check_notif',
+            success: function(data){
+                $(".notificaciones").html(data);
+            }
+        });
+    }
+    function invNotif(yo){
+        $.ajax({
+            type: 'POST',
+            data: {idnotif: $(yo).data('id')},
+            url: '/inv_notif',
+            success: function(data){
+                $("#idnotificacion").val($(yo).data('id'));
+                setModalInfo(data.id_producto, data.nombre, data.precioactual, data.cantidadtotal, 'notif');
+            }
+        });
+    }
+</script>

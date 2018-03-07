@@ -129,6 +129,7 @@ exports.voucher_sale = function(req, res){
 									    }
 									  });
 									});
+	//res.redirect('/notif_stock');
 	res.redirect('/new_sale');	
 }
 

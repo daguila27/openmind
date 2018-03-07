@@ -139,7 +139,6 @@ exports.check = function(req, res){
 
 
 exports.add_product = function(req, res){
-	// 00 00005 000002 000
 	var input = JSON.parse(JSON.stringify(req.body));
 	var codigo = input.codigo;
 	req.getConnection(function(err, connection){
@@ -157,7 +156,8 @@ exports.add_product = function(req, res){
 						nombre: rows[0].nombre,
 						precio: rows[0].precioactual,
 						cantidad: 1,
-						precioFinal: rows[0].precioactual
+						precioFinal: rows[0].precioactual,
+						tipo: rows[0].tipo
 					};
 					req.session.CostoTotal += rows[0].precioactual;
 					res.redirect('/render_sale');
@@ -167,7 +167,9 @@ exports.add_product = function(req, res){
 						if(aux[i] != null){
 							if(aux[i].id_producto == rows[0].id_producto){
 								req.session.saleProducts[i].cantidad += 1;
-								req.session.saleProducts[i].precioFinal += rows[0].precioactual;
+								if(rows[0].tipo == 'unidad'){
+									req.session.saleProducts[i].precioFinal += rows[0].precioactual;
+								}
 								req.session.CostoTotal += rows[0].precioactual;
 								res.redirect('/render_sale');
 								break;
@@ -181,7 +183,8 @@ exports.add_product = function(req, res){
 									nombre: rows[0].nombre,
 									precio: rows[0].precioactual,
 									cantidad: 1,
-									precioFinal: rows[0].precioactual
+									precioFinal: rows[0].precioactual,
+									tipo: rows[0].tipo
 								}
 								req.session.saleProducts[i+1] = data;
 								req.session.CostoTotal += rows[0].precioactual;
@@ -205,15 +208,26 @@ exports.refreshTabla = function(req, res){
 	var input = JSON.parse(JSON.stringify(req.body));
 	var id = input.id_producto;
 	var productos = req.session.saleProducts;
+	console.log(input);
+	if(input.cantidad == ''){input.cantidad=0;}
+	var tipo = input.tipo;
 	req.session.CostoTotal = 0;
 	var precioFinal = 0;
 	for(var i=0; i<productos.length; i++){
 		if(productos[i]!=null){
 			if(productos[i].id_producto == id){
-				req.session.saleProducts[i].cantidad = input.cantidad;
-				req.session.saleProducts[i].precioFinal = input.cantidad*productos[i].precio;
-				req.session.CostoTotal += input.cantidad*productos[i].precio;
-				precioFinal = input.cantidad*productos[i].precio;
+				if(tipo == 'granel'){
+					req.session.saleProducts[i].precioFinal = parseInt(input.cantidad);
+					precioFinal = parseInt(input.cantidad);
+					req.session.CostoTotal += parseInt(input.cantidad);
+				}
+				else{
+					req.session.saleProducts[i].cantidad = input.cantidad;
+					req.session.saleProducts[i].precioFinal = input.cantidad*productos[i].precio;
+					precioFinal = input.cantidad*productos[i].precio;
+					req.session.CostoTotal += parseInt(input.cantidad)*parseInt(productos[i].precio);
+				}
+				//tipo = req.session.saleProducts[i].tipo;
 			}
 			else{
 				req.session.CostoTotal += productos[i].precioFinal;
@@ -221,7 +235,7 @@ exports.refreshTabla = function(req, res){
 		}
 		if(i==productos.length-1){
 			console.log(req.session.saleProducts);
-			var info = req.session.CostoTotal.toString()+"-"+precioFinal.toString();
+			var info = req.session.CostoTotal.toString()+"-"+precioFinal.toString()+"-"+tipo;
 			res.send(info);
 		}
 	}
@@ -649,21 +663,32 @@ exports.finish_sale = function(req, res){
 			for(var i=0; i<productos.length; i++){
 				if(productos[i] != null){
 					connection.query('UPDATE producto SET cantidadtotal = cantidadtotal - ? WHERE id_producto = ?', [productos[i].cantidad, productos[i].id_producto], function(err, rows){
-						if(err){
-							console.log("Error Selecting : %s", err);
-						}
-					});
+							if(err){
+								console.log("Error Selecting : %s", err);
+							}
+						});
 					/*connection.query('UPDATE productofactura SET cantidad = cantidad - ? WHERE id_producto = ? AND id_factura = ?', [productos[i].cantidad, productos[i].id_producto, productos[i].id_factura], function(err, rows){
 						if(err)
 							console.log("Error Selecting : %s", err);
 
 					});*/
-					var dataProduct = {
-						id_venta: insertId,
-						codigo_producto: productos[i].id_producto,
-						precio: productos[i].precio,
-						cantidad: productos[i].cantidad
-					};
+					if(productos[i].tipo == 'unidad'){
+						var dataProduct = {
+							id_venta: insertId,
+							codigo_producto: productos[i].id_producto,
+							precio: productos[i].precio,
+							cantidad: productos[i].cantidad
+						};
+					}
+					else{
+						var dataProduct = {
+							id_venta: insertId,
+							codigo_producto: productos[i].id_producto,
+							precio: productos[i].precioFinal,
+							cantidad: 1
+						};	
+					}
+					
 					/*if(productos[i].precioFinal || productos[i].precioFinal == 0){
 						var dataProduct = {
 							id_venta: insertId,
@@ -981,12 +1006,17 @@ exports.informeTurno = function(req, res){
 			console.log(req.session.sellerData);
 			connection.query("SELECT caja.*,vendedor.nombreVendedor as nombre FROM caja left join vendedor on caja.codturno=vendedor.rutVendedor  WHERE idcaja=(SELECT MAX(idcaja) FROM caja)", function(err, caja){
 				connection.query("SELECT info.codigo_producto, info.fecha, info.precio AS precio_u, producto.nombre, SUM(info.cantidad) as total"
-						+"  FROM (SELECT ventaproducto.*, venta.fecha FROM ventaproducto LEFT JOIN venta ON ventaproducto.id_venta = venta.id_venta WHERE venta.rut_vendedor = ? AND venta.fecha like '"+date+"%' AND venta.pago='Efectivo' ORDER BY ventaproducto.codigo_producto) as info "
-						+"LEFT JOIN producto ON info.codigo_producto = producto.id_producto GROUP BY info.codigo_producto", [req.session.sellerData.rutVendedor], function(err, inf){
+						+"  FROM (SELECT ventaproducto.*, venta.fecha FROM ventaproducto LEFT JOIN venta ON ventaproducto.id_venta = venta.id_venta WHERE venta.rut_vendedor = ? AND venta.fecha like '"+date+"%' ORDER BY ventaproducto.codigo_producto) as info "
+						+"LEFT JOIN producto ON info.codigo_producto = producto.id_producto WHERE producto.tipo='unidad' GROUP BY info.codigo_producto", [req.session.sellerData.rutVendedor], function(err, inf){
 							if(err) throw err;
 							console.log(inf);
-							res.render('informe_turno', {page_title: "Informe de Ventas", login_admin: req.session.login_admin, data: inf, caja: caja[0] });
-				});
+							connection.query("select ventaproducto.codigo_producto, venta.fecha, producto.nombre, ventaproducto.cantidad as total,sum(ventaproducto.precio) as precio_u from ventaproducto left join venta on ventaproducto.id_venta=venta.id_venta left join producto "
+								+"on producto.id_producto = ventaproducto.codigo_producto where venta.rut_vendedor = ? and producto.tipo='granel' "
+								+"AND venta.fecha like '"+date+"%' group by ventaproducto.codigo_producto", [req.session.sellerData.rutVendedor], function(err, granel){
+									if(err) throw err;
+									res.render('informe_turno', {page_title: "Informe de Ventas", login_admin: req.session.login_admin, data: inf, data2: granel,caja: caja[0] });
+								});
+							});
 			});
 	});
 }

@@ -753,7 +753,8 @@ exports.regist_product = function(req, res){
 					id_producto: input.id_producto,
 					nombre: input.nombre,
 					cantidadtotal: input.cantidad,
-					precioactual: input.precio
+					precioactual: input.precio,
+					tipo: input.tipo
 				}
 				connection.query("INSERT INTO producto SET ?", objeto, function(err, rows){
 					if(err){console.log("Error Selecting : %s", err);}
@@ -787,4 +788,22 @@ exports.tabla_inventory = function(req, res){
 exports.guardar_inventory = function(req, res){
 	delete req.session.arrayInventory;
 	res.redirect('/inventory_product');
+}
+
+
+exports.notif_stock = function(req, res){
+	/*var productos = req.session.saleProduct;
+	var query = '';
+	for(var t=0; t<productos.length; t++){
+		query += "SELECT * FROM producto WHERE id_producto="+productos[i].codigo_producto;
+	}*/
+	req.getConnection(function(err, connection){
+		if(err){console.log("Error Selecting : %s", err);}
+		connection.query("UPDATE producto SET cantidadtotal = 0 WHERE nombre ='pan'", function(err, updata){
+			if(err){console.log("Error Selecting : %s", err);}
+			console.log(updata);
+			res.redirect('new_sale');
+		});
+	});
+	//res.redirect('/new_sale');
 }

@@ -14,21 +14,39 @@
               <td><b>Precio Final</b></td>
             </tr>
             <%for(var i=0; i<data.length; i++){
-              if(data[i] != null){%>
-              <tr>
-                <input type="hidden" id="codigoProducto<%=i%>" value="<%=data[i].id_producto%>">
-                <td><%=data[i].nombre%></td>
-                <td>$<%=data[i].precio%><input type="hidden" id="precio<%=i%>" value="<%=data[i].precio%>"></td>
-                
-                <td><input class="cantidad" id="cantidad<%=i%>" type="number" value="<%=data[i].cantidad%>"></td>
-                <td><input type="hidden" class="precioFinal" id="precioFinal<%=i%>"><div id="finalPrice<%=i%>">$<%=data[i].precioFinal%></div></td>
-                <td><div class="delete" id="<%=i%>">
-                      <button class='btn btn-default'>
-                            <span class='glyphicon glyphicon-remove' aria-hidden='true'></span>
-                      </button>
-                </div></td>
-              </tr>
-            <%}}%>  
+              if(data[i] != null){
+                if(data[i].tipo == 'granel'){%>
+                  <tr>
+                    <input type="hidden" id="tipo<%=i%>" value="<%=data[i].tipo%>">
+                    <input type="hidden" id="codigoProducto<%=i%>" value="<%=data[i].id_producto%>">
+                    <td><%=data[i].nombre%></td>
+                    <td>$<%=data[i].precio%> por KG<input type="hidden" id="precio<%=i%>" value="<%=data[i].precio%>"></td>
+                    
+                    <td>1</td>
+                    <td>$<input type="number" class="cantidad" id="cantidad<%=i%>" value="<%=data[i].precioFinal%>"></td>
+                    <td><div class="delete" id="<%=i%>">
+                          <button class='btn btn-default'>
+                                <span class='glyphicon glyphicon-remove' aria-hidden='true'></span>
+                          </button>
+                    </div></td>
+                  </tr>
+              <%}else{%>
+                <tr>
+                  <input type="hidden" id="tipo<%=i%>" value="<%=data[i].tipo%>">
+                  <input type="hidden" id="codigoProducto<%=i%>" value="<%=data[i].id_producto%>">
+                  <td><%=data[i].nombre%></td>
+                  <td>$<%=data[i].precio%><input type="hidden" id="precio<%=i%>" value="<%=data[i].precio%>"></td>
+                  
+                  <td><input class="cantidad" id="cantidad<%=i%>" type="number" value="<%=data[i].cantidad%>"></td>
+                  <td><input type="hidden" class="precioFinal" id="precioFinal<%=i%>"><div id="finalPrice<%=i%>">$<%=data[i].precioFinal%></div></td>
+                  <td><div class="delete" id="<%=i%>">
+                        <button class='btn btn-default'>
+                              <span class='glyphicon glyphicon-remove' aria-hidden='true'></span>
+                        </button>
+                  </div></td>
+                </tr>
+            <%}%>
+            <%}}%> 
             <tr id="head">
               <input type="hidden" id="precioVenta" value="<%=Costo%>">
               <td style="display: flex;"><b>Costo: </b>$<div class="costoTotal"><%=Costo%></div></td>
@@ -37,42 +55,83 @@
     </table>
 </div>
 <script type="text/javascript">
-        
+        function refreshSum(yo){
+          var id = $(yo).attr('id');
+            id = id.substring(8, id.length);
+            var tipo = $("#tipo"+id).val();
+            var cantidad = $(yo).val();
+            var codigoProducto = $("#codigoProducto"+id).val();
+              $.ajax({
+                type: 'POST',
+                data: {'id_producto': codigoProducto, 'cantidad': cantidad, 'tipo': tipo},
+                url: '/refreshTabla',
+                success: function(data){
+                    var datos = data.split("-");
+                    if(datos[2]=='unidad'){
+                      $("#precioFinal"+id).val(datos[1]);
+                      $("#finalPrice"+id).html("$"+datos[1]);
+                      $(".costoTotal").html(datos[0]);
+                    }
+                    else{
+                      $("#cantidad"+id).val(datos[1]);
+                      $("#finalPrice"+id).html("$"+datos[1]);
+                      $(".costoTotal").html(datos[0]);
+                    }              
+                }
+              });
+        }
         $('.cantidad').on('keyup', function(e){
             e.preventDefault();
-            var id = $(this).attr('id');
-            var i = id.substring(id.length-1);
+            refreshSum(this);
+            /*var id = $(this).attr('id');
+            id = id.substring(8, id.length);
+            var tipo = $("#tipo"+id).val();
             var cantidad = $(this).val();
-            var codigoProducto = $("#codigoProducto"+i).val();
-            $.ajax({
-              type: 'POST',
-              data: {'id_producto': codigoProducto, 'cantidad': cantidad},
-              url: '/refreshTabla',
-              success: function(data){
-                  var datos = data.split("-");
-                  $("#precioFinal"+i).val(datos[1]);
-                  $("#finalPrice"+i).html("$"+datos[1]);
-                  $(".costoTotal").html(datos[0]);
-              }
-            });
+            var codigoProducto = $("#codigoProducto"+id).val();
+              $.ajax({
+                type: 'POST',
+                data: {'id_producto': codigoProducto, 'cantidad': cantidad, 'tipo': tipo},
+                url: '/refreshTabla',
+                success: function(data){
+                    var datos = data.split("-");
+                    if(datos[2]=='unidad'){
+                      $("#precioFinal"+id).val(datos[1]);
+                      $("#finalPrice"+id).html("$"+datos[1]);
+                      $(".costoTotal").html(datos[0]);
+                    }
+                    else{
+                      $("#cantidad"+id).val(datos[1]);
+                      $("#finalPrice"+id).html("$"+datos[1]);
+                      $(".costoTotal").html(datos[0]);
+                    }              
+                }
+              });*/
         });
         $('.cantidad').on('click', function(e){
             e.preventDefault();
-            var id = $(this).attr('id');
-            var i = id.substring(id.length-1);
+            refreshSum(this);
+            /*var id = $(this).attr('id');
+            id = id.substring(8, id.length);
+            var tipo = $("#tipo"+id).val();
             var cantidad = $(this).val();
-            var codigoProducto = $("#codigoProducto"+i).val();
+            var codigoProducto = $("#codigoProducto"+id).val();
             $.ajax({
               type: 'POST',
-              data: {'id_producto': codigoProducto, 'cantidad': cantidad},
+              data: {'id_producto': codigoProducto, 'cantidad': cantidad, 'tipo': tipo},
               url: '/refreshTabla',
               success: function(data){
                   var datos = data.split("-");
-                  $("#precioFinal"+i).val(datos[1]);
-                  $("#finalPrice"+i).html("$"+datos[1]);
-                  $(".costoTotal").html(datos[0]);
+                  if(datos[2]=='unidad'){
+                    $("#precioFinal"+id).val(datos[1]);
+                    $("#finalPrice"+id).html("$"+datos[1]);
+                    $(".costoTotal").html(datos[0]);
+                  }
+                  else{
+                    $("#cantidad"+id).val(datos[1]);
+                    $("#finalPrice"+id).html("$"+datos[1]);
+                  }    
               }
-            });
+            });*/
         });
 </script>
 
