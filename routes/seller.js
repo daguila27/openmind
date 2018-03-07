@@ -101,8 +101,13 @@ exports.def_turno = function(req, res){
 	req.getConnection(function(err, connection){
 		connection.query('SELECT * FROM vendedor', function(err, rows){
 			if(err)
-			console.log("Error Selecting : %s", err);
-			res.render('def_turno', {page_title: 'Definir turno', data: rows, login_admin: req.session.login_admin, before: req.session.before});
+				console.log("Error Selecting : %s", err);
+			connection.query("SELECT * FROM caja WHERE idcaja = (SELECT max(idcaja) FROM caja)", function(err, caj){
+				if(err)
+					console.log("Error Selecting : %s",err);
+				console.log(caj);
+				res.render('def_turno', {page_title: 'Definir turno', data: rows, login_admin: req.session.login_admin, before: req.session.before, monto:caj[0].final});
+			});
 		});
 	});
 }

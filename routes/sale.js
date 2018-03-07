@@ -981,7 +981,7 @@ exports.informeTurno = function(req, res){
 			console.log(req.session.sellerData);
 			connection.query("SELECT caja.*,vendedor.nombreVendedor as nombre FROM caja left join vendedor on caja.codturno=vendedor.rutVendedor  WHERE idcaja=(SELECT MAX(idcaja) FROM caja)", function(err, caja){
 				connection.query("SELECT info.codigo_producto, info.fecha, info.precio AS precio_u, producto.nombre, SUM(info.cantidad) as total"
-						+"  FROM (SELECT ventaproducto.*, venta.fecha FROM ventaproducto LEFT JOIN venta ON ventaproducto.id_venta = venta.id_venta WHERE venta.rut_vendedor = ? AND venta.fecha like '"+date+"%' ORDER BY ventaproducto.codigo_producto) as info "
+						+"  FROM (SELECT ventaproducto.*, venta.fecha FROM ventaproducto LEFT JOIN venta ON ventaproducto.id_venta = venta.id_venta WHERE venta.rut_vendedor = ? AND venta.fecha like '"+date+"%' AND venta.pago='Efectivo' ORDER BY ventaproducto.codigo_producto) as info "
 						+"LEFT JOIN producto ON info.codigo_producto = producto.id_producto GROUP BY info.codigo_producto", [req.session.sellerData.rutVendedor], function(err, inf){
 							if(err) throw err;
 							console.log(inf);
