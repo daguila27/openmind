@@ -118,6 +118,7 @@ exports.voucher_sale = function(req, res){
 								printer.println(details);
 								printer.println("  Total:             $"+req.session.CostoTotal);
 							    printer.println("  Vendedor: "+req.session.nameSeller);
+							    printer.println("  Tipo de Pago: "+req.session.tipoPago);
 								printer.println("  Fecha y Hora: "+fecha);
 								printer.printImage('./assets/img/belitaicon.png', function(done){
 								  	printer.cut();

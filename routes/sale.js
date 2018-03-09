@@ -640,6 +640,7 @@ exports.finish_sale = function(req, res){
 	var RutCliente = input.CodigoCliente;
 	var fecha = new Date();
 	var productos = req.session.saleProducts;
+	req.session.tipoPago = pago;
 	console.log("PRODUCTOOOOOS");
 	console.log(productos);
 	var insertId;
