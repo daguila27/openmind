@@ -1006,12 +1006,12 @@ exports.informeTurno = function(req, res){
 			console.log(req.session.sellerData);
 			connection.query("SELECT caja.*,vendedor.nombreVendedor as nombre FROM caja left join vendedor on caja.codturno=vendedor.rutVendedor  WHERE idcaja=(SELECT MAX(idcaja) FROM caja)", function(err, caja){
 				connection.query("SELECT info.codigo_producto, info.fecha, info.precio AS precio_u, producto.nombre, SUM(info.cantidad) as total"
-						+"  FROM (SELECT ventaproducto.*, venta.fecha FROM ventaproducto LEFT JOIN venta ON ventaproducto.id_venta = venta.id_venta WHERE venta.rut_vendedor = ? AND venta.fecha like '"+date+"%' ORDER BY ventaproducto.codigo_producto) as info "
+						+"  FROM (SELECT ventaproducto.*, venta.fecha FROM ventaproducto LEFT JOIN venta ON ventaproducto.id_venta = venta.id_venta WHERE venta.rut_vendedor = ? AND venta.pago = 'Efectivo' AND venta.fecha like '"+date+"%' ORDER BY ventaproducto.codigo_producto) as info "
 						+"LEFT JOIN producto ON info.codigo_producto = producto.id_producto WHERE producto.tipo='unidad' GROUP BY info.codigo_producto", [req.session.sellerData.rutVendedor], function(err, inf){
 							if(err) throw err;
 							console.log(inf);
 							connection.query("select ventaproducto.codigo_producto, venta.fecha, producto.nombre, ventaproducto.cantidad as total,sum(ventaproducto.precio) as precio_u from ventaproducto left join venta on ventaproducto.id_venta=venta.id_venta left join producto "
-								+"on producto.id_producto = ventaproducto.codigo_producto where venta.rut_vendedor = ? and producto.tipo='granel' "
+								+"on producto.id_producto = ventaproducto.codigo_producto where venta.rut_vendedor = ? and venta.pago = 'Efectivo' and producto.tipo='granel' "
 								+"AND venta.fecha like '"+date+"%' group by ventaproducto.codigo_producto", [req.session.sellerData.rutVendedor], function(err, granel){
 									if(err) throw err;
 									res.render('informe_turno', {page_title: "Informe de Ventas", login_admin: req.session.login_admin, data: inf, data2: granel,caja: caja[0] });
