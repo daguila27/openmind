@@ -13,11 +13,11 @@
                 <a href="#">
                     <div>
                             <strong>Producto faltante:</strong>
-                            <span class="pull-right text-muted">
+                            <span style="top:3px;right: 5%; position: absolute;" class="pull-right text-muted">
                             <em><%= hora%></em>
                             </span>
                     </div>
-                    <div style="margin: 5px"><%=notif[u].mensaje%></div>
+                    <div style="margin: 10px"><%=notif[u].mensaje%></div>
                     <div>
                         <button type="button" class="btn btn-primary" onclick="okNotif(this)" data-id="<%=notif[u].idnotif%>">Ok</button>
                         <button type="button" class="btn btn-success" onclick="invNotif(this)" data-id="<%=notif[u].idnotif%>" data-toggle="modal" data-target="#editarModal" >Inventario</button>
