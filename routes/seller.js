@@ -101,15 +101,20 @@ exports.def_turno = function(req, res){
 	req.getConnection(function(err, connection){
 		connection.query('SELECT * FROM vendedor', function(err, rows){
 			if(err)
-			console.log("Error Selecting : %s", err);
-			res.render('def_turno', {page_title: 'Definir turno', data: rows, login_admin: req.session.login_admin, before: req.session.before});
+				console.log("Error Selecting : %s", err);
+			connection.query("SELECT * FROM caja WHERE idcaja = (SELECT max(idcaja) FROM caja)", function(err, caj){
+				if(err)
+					console.log("Error Selecting : %s",err);
+				console.log(caj);
+				res.render('def_turno', {page_title: 'Definir turno', data: rows, login_admin: req.session.login_admin, before: req.session.before, monto:caj[0].final});
+			});
 		});
 	});
 }
 
 exports.set_turno = function(req, res){
 	var input = JSON.parse(JSON.stringify(req.body));
-	input.fecha = new Date().toLocaleDateString();
+	input.fecha = new Date().toLocaleString();
 	delete input.before;
 	req.getConnection(function(err, connection){
 		connection.query('INSERT INTO caja SET ?', [input], function(err, rows){

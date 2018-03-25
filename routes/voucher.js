@@ -82,7 +82,7 @@ exports.voucher_sale = function(req, res){
 	var Costo = req.session.CostoTotal;
 	var details = "   Nombre                   Cantidad    Precio\n\n"; 
 	var f = new Date();
-	var fecha = f.getDate()+"/"+f.getMonth()+"/"+f.getFullYear()+" "+f.getHours()+":"+f.getMinutes()+":"+f.getSeconds();
+	var fecha = f.getDate()+"/"+(parseInt(f.getMonth())+1).toString()+"/"+f.getFullYear()+" "+f.getHours()+":"+f.getMinutes()+":"+f.getSeconds();
 	
 	for(var i=0; i<detalles.length; i++){
 		if(detalles[i]!=null){
@@ -118,6 +118,7 @@ exports.voucher_sale = function(req, res){
 								printer.println(details);
 								printer.println("  Total:             $"+req.session.CostoTotal);
 							    printer.println("  Vendedor: "+req.session.nameSeller);
+							    printer.println("  Tipo de Pago: "+req.session.tipoPago);
 								printer.println("  Fecha y Hora: "+fecha);
 								printer.printImage('./assets/img/belitaicon.png', function(done){
 								  	printer.cut();

@@ -253,26 +253,12 @@ app.get('/createMoney', client.createMoney);
 
 
 
+var server = http.createServer(app);
 
 
 app.use(app.router);
 
-http.createServer(app).listen(app.get('port'), function(){
+server.listen(app.get('port'), function(){
   console.log('Ingrese en su navegador a http://localhost:' + app.get('port'));
 });
 
-
-
-
-	
-	/*var output = jre.spawnSync( 
-	    ['routes/java'],                 
-	    'impresoraSale',                  
-	    [details, Costo, fecha, req.session.codVenta, req.session.nameSeller], 
-	    { encoding: 'utf8' }      
-	  ).stdout.trim();            
-	console.log(output);*/
-
-
-
-	//COMISION DE VENDEDORES

@@ -23,6 +23,7 @@
     "node-printer": "^1.0.2",
     "node-thermal-printer": "^1.1.1",
     "npos": "^0.1.18",
-    "passport": "^0.3.2"
+    "passport": "^0.3.2",
+    "socket.io": "^2.0.4"
   }
 }
