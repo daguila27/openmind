@@ -996,24 +996,27 @@ exports.range_sale = function(req, res){
 exports.informeTurno = function(req, res){
 	req.getConnection(function(err, connection){
 		
-			var fecha = new Date().toLocaleDateString();
+			var fecha = new Date().toLocaleString();
 			//console.log(fecha);
-			fecha = fecha.split('-');
+			/*fecha = fecha.split('-');
 			if(fecha[1].length == 1){fecha[1] = "0"+fecha[1];}
-			if(fecha[2].length == 1){fecha[2] = "0"+fecha[2];}
-			var date = fecha.join('-');
+			if(fecha[2].length == 1){fecha[2] = "0"+fecha[2];}*/
+			//var date = fecha.join('-');
 			//var fecha = fecha.getFullYear()+"%"+parseInt(fecha.getMonth()+1).toString()+"%"+parseInt(fecha.getDate()+1).toString();
-			console.log(date);
+			//console.log(date);
 			console.log(req.session.sellerData);
 			connection.query("SELECT caja.*,vendedor.nombreVendedor as nombre FROM caja left join vendedor on caja.codturno=vendedor.rutVendedor  WHERE idcaja=(SELECT MAX(idcaja) FROM caja)", function(err, caja){
+				if(err) throw err;
+				console.log(fecha)
+				console.log(caja[0].fecha.toLocaleString());
 				connection.query("SELECT info.codigo_producto, info.fecha, info.precio AS precio_u, producto.nombre, SUM(info.cantidad) as total"
-						+"  FROM (SELECT ventaproducto.*, venta.fecha FROM ventaproducto LEFT JOIN venta ON ventaproducto.id_venta = venta.id_venta WHERE venta.rut_vendedor = ? AND venta.pago = 'Efectivo' AND venta.fecha like '"+date+"%' ORDER BY ventaproducto.codigo_producto) as info "
+						+"  FROM (SELECT ventaproducto.*, venta.fecha FROM ventaproducto LEFT JOIN venta ON ventaproducto.id_venta = venta.id_venta WHERE venta.rut_vendedor = ? AND venta.pago = 'Efectivo' AND venta.fecha BETWEEN '"+caja[0].fecha.toLocaleString()+"' AND '"+fecha+"' ORDER BY ventaproducto.codigo_producto) as info "
 						+"LEFT JOIN producto ON info.codigo_producto = producto.id_producto WHERE producto.tipo='unidad' GROUP BY info.codigo_producto", [req.session.sellerData.rutVendedor], function(err, inf){
 							if(err) throw err;
-							console.log(inf);
+							//console.log(inf);
 							connection.query("select ventaproducto.codigo_producto, venta.fecha, producto.nombre, ventaproducto.cantidad as total,sum(ventaproducto.precio) as precio_u from ventaproducto left join venta on ventaproducto.id_venta=venta.id_venta left join producto "
 								+"on producto.id_producto = ventaproducto.codigo_producto where venta.rut_vendedor = ? and venta.pago = 'Efectivo' and producto.tipo='granel' "
-								+"AND venta.fecha like '"+date+"%' group by ventaproducto.codigo_producto", [req.session.sellerData.rutVendedor], function(err, granel){
+								+"AND venta.fecha  BETWEEN '"+caja[0].fecha.toLocaleString()+"' AND '"+fecha+"' group by ventaproducto.codigo_producto", [req.session.sellerData.rutVendedor], function(err, granel){
 									if(err) throw err;
 									res.render('informe_turno', {page_title: "Informe de Ventas", login_admin: req.session.login_admin, data: inf, data2: granel,caja: caja[0] });
 								});

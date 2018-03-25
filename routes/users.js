@@ -58,7 +58,7 @@ exports.render_notif = function(req, res){
     connection.query('SELECT * FROM notif WHERE ok = false', function(err, notif){
       if(err)
         console.log('Error Selecting : %s', err);
-      console.log(notif);
+      //console.log(notif);
       res.render('notificaciones', {notif: notif})
     });
   });

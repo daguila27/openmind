@@ -114,7 +114,7 @@ exports.def_turno = function(req, res){
 
 exports.set_turno = function(req, res){
 	var input = JSON.parse(JSON.stringify(req.body));
-	input.fecha = new Date().toLocaleDateString();
+	input.fecha = new Date().toLocaleString();
 	delete input.before;
 	req.getConnection(function(err, connection){
 		connection.query('INSERT INTO caja SET ?', [input], function(err, rows){
