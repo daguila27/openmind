@@ -225,6 +225,8 @@ app.get('/inf_turno', sale.informeTurno);
 
 app.post('/quitar_saldo', sale.quitarSaldo);
 
+app.get('/flujo_turno', sale.flujoTurno);
+
 
 
 

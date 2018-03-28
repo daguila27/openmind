@@ -26,11 +26,15 @@ else{%>
           <h4 class="modal-title">Quitar saldo: </h4>
         </div>
             
-        <div class="modal-body">
+        <div class="modal-body">    
                 <div class="input-group">
                   <span class="input-group-addon">$</span>
                   <input id="monto-menos" type="number" class="form-control" placeholder="Ingrese monto">
                 </div>     
+                <div>
+                  <label for="detalle">Ingrese detalle: </label>
+                  <textarea id="detflujo" style="width: 100%" rows="4" cols="50"></textarea>
+                </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -64,6 +68,89 @@ else{%>
             </form>
         </div>
     </div>
+<div class="row">
+  <div class="col-md-offset-1 col-md-10" style="margin-bottom: 1%">
+    <div class="panel panel-info .fluid-cash" style="cursor: pointer;">
+      <div class="panel-heading" style="display: flex;" data-toggle="collapse" data-target="#flujo">
+        <h2>Flujo de caja</h2>
+      </div>
+    <div class="collapse panel-body" id="flujo"> 
+      <div class="table-responsive">
+          <table class="table table-striped">
+                      <thead>
+                          <tr>
+                              <th>Detalle</th>
+                              <th>Monto</th>
+                              <th>Tipo</th>
+                              <th>Instante</th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                          <%var total = 0;
+                          for(var y=0; y < flujo.length; y++){
+                            total += flujo[y].monto;
+                          %>
+                            <tr>
+                              <td><%= flujo[y].detalle%></td>
+                              <td>$<%= Math.abs(flujo[y].monto)%></td>
+                              <td>
+                                <%if(flujo[y].monto < 0){%>
+                                  Ingreso
+                                <%}else{%>
+                                  Egreso
+                                <%}%>
+                              </td>
+                              <td><%= flujo[y].inst.toLocaleString()%></td>
+                            </tr>
+                          <%}%>
+                            <tr>
+                              <td>Flujo total: $<%=total%></td>
+                            </tr>
+                      </tbody>
+
+                  </table> 
+      </div>
+      </div>
+  </div>
+
+
+  <!--  <div class="panel panel-success">
+      
+        <div style="margin: 0" class="panel-header" data-toggle="collapse" data-target="#flujo">Flujo de caja</div>
+      
+      <div id="flujo" class="collapse panel-body">
+        <table class="table table-striped">
+                      <thead>
+                          <tr>
+                              <th>Detalle</th>
+                              <th>Monto</th>
+                              <th>Tipo</th>
+                              <th>Instante</th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                          <%for(var y=0; y < flujo.length; y++){%>
+                            <tr>
+                              <td><%= flujo[y].detalle%></td>
+                              <td>$<%= Math.abs(flujo[y].monto)%></td>
+                              <td>
+                                <%if(flujo[y].monto < 0){%>
+                                  Ingreso
+                                <%}else{%>
+                                  Egreso
+                                <%}%>
+                              </td>
+                              <td><%= flujo[y].inst.toLocaleString()%></td>
+                            </tr>
+                          <%}%>
+                      </tbody>
+                  </table> 
+      </div>
+    </div>
+-->
+
+  </div>
+</div>
 <div class="row">
   <div class="col-md-offset-1 col-md-5">
     <div class="panel panel-info">
@@ -179,7 +266,7 @@ else{%>
         //e.preventDefault();
         $.ajax({
           type: 'POST',
-          data: {idcaja: $("#idcaja").val(), monto: $("#monto-menos").val()},
+          data: {idcaja: $("#idcaja").val(), monto: $("#monto-menos").val(), detalle: $("#detflujo").val()},
           url: '/quitar_saldo',
           success: function(data){
             recalcular(parseInt(data), caja_total);

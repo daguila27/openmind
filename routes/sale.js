@@ -1018,13 +1018,31 @@ exports.informeTurno = function(req, res){
 								+"on producto.id_producto = ventaproducto.codigo_producto where venta.rut_vendedor = ? and venta.pago = 'Efectivo' and producto.tipo='granel' "
 								+"AND venta.fecha  BETWEEN '"+caja[0].fecha.toLocaleString()+"' AND '"+fecha+"' group by ventaproducto.codigo_producto", [req.session.sellerData.rutVendedor], function(err, granel){
 									if(err) throw err;
-									res.render('informe_turno', {page_title: "Informe de Ventas", login_admin: req.session.login_admin, data: inf, data2: granel,caja: caja[0] });
+									connection.query(/*"SELECT * FROM flujo WHERE flujo.inst BETWEEN '"+caja[0].fecha.toLocaleString()+"' AND '"+fecha+"'"*/
+										"SELECT * FROM flujo WHERE flujo.idturno=?",[caja[0].idcaja],
+										function(err, mov){
+											if(err) throw err;
+									
+											res.render('informe_turno', {page_title: "Informe de Ventas", login_admin: req.session.login_admin, data: inf, data2: granel,caja: caja[0] , flujo: mov});			
+										});
 								});
 							});
 			});
 	});
 }
 
+exports.flujoTurno = function(req, res){
+	req.getConnection(function(err, connection){
+		
+			connection.query("SELECT * FROM flujo", function(err, flu){
+				if(err)
+					console.log("Error Selecting %s", err);
+				res.render('flujo_caja', {page_title: "Flujo de Caja", data:flu, login_admin: req.session.login_admin});
+
+				 
+			});
+	});
+}
 
 exports.cerrarTurno = function(req, res){
 	var input = JSON.parse(JSON.stringify(req.body));
@@ -1045,14 +1063,25 @@ exports.quitarSaldo = function(req, res){
 	var input = JSON.parse(JSON.stringify(req.body));
 	var idcaja = input.idcaja;
 	var monto = input.monto;
+	var detalle = input.detalle;
+	var flujo = {
+		idturno: idcaja,
+		monto: monto,
+		inst: new Date().toLocaleString(),
+		detalle : detalle
+	};
+	console.log(flujo);
 	req.getConnection(function(err, connection){
 			if(err) throw err;
 				connection.query("UPDATE caja SET monto = monto-"+monto+" WHERE idcaja=?", [idcaja],function(err, updata){
 					if(err) throw err;
-					connection.query("SELECT * FROM caja WHERE idcaja=?", [idcaja],function(err, caja){
+					connection.query("INSERT INTO flujo SET ?", [flujo], function(err, insrflujo){
 						if(err) throw err;
-						console.log(caja);
-						res.send(caja[0].monto+'');
+						connection.query("SELECT * FROM caja WHERE idcaja=?", [idcaja],function(err, caja){
+							if(err) throw err;
+							console.log(caja);
+							res.send(caja[0].monto+'');
+						});
 					});
 			});
 	});

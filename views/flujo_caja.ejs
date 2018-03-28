@@ -1,0 +1,15 @@
+<%if(login_admin){%>
+  <%- include layouts/admin_header.ejs %>
+<%}
+else{%>
+  <%- include layouts/user_header.ejs%>
+<%}%>
+<div class="list-group-item">
+  <%for(var y=0; y< data.length; y++){%>
+    <div class="col-md-6">
+      <a href="#" class="list-group-item"><%= data[y].detalle%></a>
+    </div>  
+  <%}%>
+</div>
+
+<%- include layouts/footer.ejs %>
