@@ -1,5 +1,3 @@
-
-
 <%if(login_admin){%>
   <%- include layouts/admin_header.ejs %>
 <%}
@@ -16,7 +14,9 @@ else{%>
     }
 </style>
 
-
+<input type="hidden" id="gan-input">
+<input type="hidden" id="flu-input">
+<input type="hidden" id="ini-input">
 
 <div class="modal fade" id="quitar-saldo" tabindex="-1" role="dialog">
   <div class="modal-dialog" role="document">
@@ -73,81 +73,18 @@ else{%>
     <div class="panel panel-info .fluid-cash" style="cursor: pointer;">
       <div class="panel-heading" style="display: flex;" data-toggle="collapse" data-target="#flujo">
         <h2>Flujo de caja</h2>
+
+        <div class="panelitem" style="margin-top: 10px; margin-left: 5%"><p><strong>Total:</strong></p><p class="div-flujo" style="margin-top: 2px">$
+        <%=parseInt(flujo)*parseInt(-1)%></p></div>
       </div>
     <div class="collapse panel-body" id="flujo"> 
-      <div class="table-responsive">
-          <table class="table table-striped">
-                      <thead>
-                          <tr>
-                              <th>Detalle</th>
-                              <th>Monto</th>
-                              <th>Tipo</th>
-                              <th>Instante</th>
-                          </tr>
-                      </thead>
-                      <tbody>
-                          <%var total = 0;
-                          for(var y=0; y < flujo.length; y++){
-                            total += flujo[y].monto;
-                          %>
-                            <tr>
-                              <td><%= flujo[y].detalle%></td>
-                              <td>$<%= Math.abs(flujo[y].monto)%></td>
-                              <td>
-                                <%if(flujo[y].monto < 0){%>
-                                  Ingreso
-                                <%}else{%>
-                                  Egreso
-                                <%}%>
-                              </td>
-                              <td><%= flujo[y].inst.toLocaleString()%></td>
-                            </tr>
-                          <%}%>
-                            <tr>
-                              <td>Flujo total: $<%=total%></td>
-                            </tr>
-                      </tbody>
-
-                  </table> 
+      <div class="table-responsive tabla-flujo">
+           
       </div>
       </div>
   </div>
 
 
-  <!--  <div class="panel panel-success">
-      
-        <div style="margin: 0" class="panel-header" data-toggle="collapse" data-target="#flujo">Flujo de caja</div>
-      
-      <div id="flujo" class="collapse panel-body">
-        <table class="table table-striped">
-                      <thead>
-                          <tr>
-                              <th>Detalle</th>
-                              <th>Monto</th>
-                              <th>Tipo</th>
-                              <th>Instante</th>
-                          </tr>
-                      </thead>
-                      <tbody>
-                          <%for(var y=0; y < flujo.length; y++){%>
-                            <tr>
-                              <td><%= flujo[y].detalle%></td>
-                              <td>$<%= Math.abs(flujo[y].monto)%></td>
-                              <td>
-                                <%if(flujo[y].monto < 0){%>
-                                  Ingreso
-                                <%}else{%>
-                                  Egreso
-                                <%}%>
-                              </td>
-                              <td><%= flujo[y].inst.toLocaleString()%></td>
-                            </tr>
-                          <%}%>
-                      </tbody>
-                  </table> 
-      </div>
-    </div>
--->
 
   </div>
 </div>
@@ -222,11 +159,32 @@ else{%>
 
 
 <script type="text/javascript">
-    function recalcular(monto, dif){
-
+    function recalcular(monto, dif, fl){
+      $(".div-flujo").html("$ "+fl);
       $(".cash-inicial").html("$"+monto);
-      $(".cash-final").html("$"+parseInt(monto + dif).toString());
+      $(".cash-final").html("$"+parseInt(monto + dif - fl).toString());
+      $("#gan-input").val(dif);
+      $("#flu-input").val(fl);
+      $("#ini-input").val(monto);
+      
     }
+     function refrescar_all(mont){
+        $("#flu-input").val(parseInt($("#flu-input").val()) + parseInt(mont));
+
+        recalcular(parseInt($("#ini-input").val()) , parseInt($("#gan-input").val()),parseInt($("#flu-input").val()));      
+     } 
+
+    function render_flujotabla(idcaja){
+      $.ajax({
+        type: 'GET',
+        url: '/flujo_turno/'+idcaja,
+        success: function(data){
+          $(".tabla-flujo").html(data);
+        }
+      });
+    }
+    render_flujotabla(<%=caja.idcaja%>);
+    
     var id;
     var cantidad;
     var precio_u;
@@ -235,6 +193,8 @@ else{%>
     var monto_granel = 0;
     var monto_productos = 0;
     var caja_total = 0;
+    var flujo_total = <%=parseInt(flujo)%>;
+    
     $(".fila").each(function(){
       id = $(this).attr('id'); 
       cantidad = $("#"+id+" .cant").data('cant');
@@ -258,8 +218,8 @@ else{%>
     $(".monto-granel").html("$"+monto_granel);
     $(".monto-productos").html(monto_productos);
     $(".cash").html("$"+caja_total);
-    $("#caja-final").val(parseInt(caja_total + monto_inicial));
-    recalcular(monto_inicial, caja_total);
+    $("#caja-final").val(parseInt(caja_total + monto_inicial - flujo_total));
+    recalcular(monto_inicial, caja_total,flujo_total);
     
 
     $(".men-saldo").on('click', function(e){
@@ -269,10 +229,14 @@ else{%>
           data: {idcaja: $("#idcaja").val(), monto: $("#monto-menos").val(), detalle: $("#detflujo").val()},
           url: '/quitar_saldo',
           success: function(data){
-            recalcular(parseInt(data), caja_total);
+            render_flujotabla($("#idcaja").val());
+            refrescar_all($("#monto-menos").val());
+            
           }
         });
     });
+   
+
 
 </script>
 <%- include layouts/footer.ejs %>

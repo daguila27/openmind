@@ -1,0 +1,52 @@
+              <table class="table table-striped">
+                      <thead>
+                          <tr>
+                              <th>Detalle</th>
+                              <th>Monto</th>
+                              <th>Tipo</th>
+                              <th>Instante</th>
+                              <th>Anular</th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                          <%var total = 0;
+                          for(var y=0; y < flujo.length; y++){
+                            total += flujo[y].monto;
+                          %>
+                            <tr>
+                              <td><%= flujo[y].detalle%></td>
+                              <td class="montof" data-pla="<%=flujo[y].monto%>">$<%= Math.abs(flujo[y].monto)%></td>
+                              <td>
+                                <%if(flujo[y].monto < 0){%>
+                                  Ingreso
+                                <%}else{%>
+                                  Egreso
+                                <%}%>
+                              </td>
+                              <td><%= flujo[y].inst.toLocaleString()%></td>
+                              <td>
+                                <button class="btn btn-success null-fluid" data-id="<%= flujo[y].idflujo%>" data-mon="<%= flujo[y].monto%>" >Anular</button>
+                              </td>
+                            </tr>
+                          <%}%>
+                      </tbody>
+
+                  </table> 
+
+                  <script type="text/javascript">
+                    $(".null-fluid").on('click', function(e){
+                        e.preventDefault();
+                        var mont = $(this).data('mon');
+                        $.ajax({
+                          type: 'GET',
+                          url: '/null_fluid/'+$(this).data('id'),
+                          success: function(data){
+                            render_flujotabla($("#idcaja").val());
+                            
+                            refrescar_all(parseInt(mont)*-1);
+
+                          }
+                        });
+                      });
+
+                  </script>
