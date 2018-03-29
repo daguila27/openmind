@@ -114,41 +114,6 @@ else{%>
   </div>
 
 
-  <!--  <div class="panel panel-success">
-      
-        <div style="margin: 0" class="panel-header" data-toggle="collapse" data-target="#flujo">Flujo de caja</div>
-      
-      <div id="flujo" class="collapse panel-body">
-        <table class="table table-striped">
-                      <thead>
-                          <tr>
-                              <th>Detalle</th>
-                              <th>Monto</th>
-                              <th>Tipo</th>
-                              <th>Instante</th>
-                          </tr>
-                      </thead>
-                      <tbody>
-                          <%for(var y=0; y < flujo.length; y++){%>
-                            <tr>
-                              <td><%= flujo[y].detalle%></td>
-                              <td>$<%= Math.abs(flujo[y].monto)%></td>
-                              <td>
-                                <%if(flujo[y].monto < 0){%>
-                                  Ingreso
-                                <%}else{%>
-                                  Egreso
-                                <%}%>
-                              </td>
-                              <td><%= flujo[y].inst.toLocaleString()%></td>
-                            </tr>
-                          <%}%>
-                      </tbody>
-                  </table> 
-      </div>
-    </div>
--->
-
   </div>
 </div>
 <div class="row">
