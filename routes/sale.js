@@ -1053,7 +1053,7 @@ exports.cerrarTurno = function(req, res){
 	var idcaja = input.idcaja;
 	req.getConnection(function(err, connection){
 			if(err) throw err;
-				connection.query("UPDATE caja SET final=? WHERE idcaja=?", [final,idcaja],function(err, caja){
+				connection.query("UPDATE caja SET final=?,fechafin = now() WHERE idcaja=?", [final,idcaja],function(err, caja){
 				if(err) throw err;
 				delete req.session.sellerData;
 				res.redirect('/');
@@ -1102,3 +1102,89 @@ exports.null_fluid = function(req, res){
 			});
 	});
 }
+
+exports.histCaja = function(req, res){
+	req.getConnection(function(err, connection){
+		if(err)
+			console.log("Error Connection : %s", err);
+		connection.query("SELECT vendedor.nombreVendedor as nombre, vendedor.rutVendedor as id FROM vendedor",
+			function(err, ven){
+				if(err)
+					console.log("Error Selecting : %s", err);
+				console.log(ven);
+				res.render('ventHist', {page_title: "Historial de caja",login_admin: req.session.login_admin, sel:ven});
+			});
+	});
+}
+
+
+
+exports.list_hist = function(req, res){
+	var input = JSON.parse(JSON.stringify(req.body));
+	console.log(input);
+	req.getConnection(function(err, connection){
+		if(err)
+			console.log("Error Connection : %s", err);
+		connection.query("SELECT vendedor.nombreVendedor,caja.* FROM caja left join vendedor on caja.codturno = vendedor.rutVendedor where fecha like '"+input.fecha+"%'" ,function(err, caja){
+				if(err) throw err;
+				
+				res.render('turnos_list', {turnos: caja});
+
+		});
+		/*connection.query("SELECT caja.*,vendedor.nombreVendedor as nombre FROM caja left join vendedor on caja.codturno=vendedor.rutVendedor  WHERE codturno= ? and fecha = ?",[input.idturno, input.fecha] ,function(err, caja){
+				if(err) throw err;
+				console.log(caja);
+				connection.query("SELECT info.codigo_producto, info.fecha, info.precio AS precio_u, producto.nombre, SUM(info.cantidad) as total"
+						+"  FROM (SELECT ventaproducto.*, venta.fecha FROM ventaproducto LEFT JOIN venta ON ventaproducto.id_venta = venta.id_venta WHERE venta.rut_vendedor = ? AND venta.pago = 'Efectivo' AND venta.fecha = ? ORDER BY ventaproducto.codigo_producto) as info "
+						+"LEFT JOIN producto ON info.codigo_producto = producto.id_producto WHERE producto.tipo='unidad' GROUP BY info.codigo_producto", [input.idturno, input.fecha], function(err, inf){
+							if(err) throw err;
+							//console.log(inf);
+							connection.query("select ventaproducto.codigo_producto, venta.fecha, producto.nombre, ventaproducto.cantidad as total,sum(ventaproducto.precio) as precio_u from ventaproducto left join venta on ventaproducto.id_venta=venta.id_venta left join producto "
+								+"on producto.id_producto = ventaproducto.codigo_producto where venta.rut_vendedor = ? and venta.pago = 'Efectivo' and producto.tipo='granel' "
+								+"AND venta.fecha  = ? group by ventaproducto.codigo_producto", [input.idturno, input.fecha], function(err, granel){
+									if(err) throw err;
+									connection.query(
+											"select coalesce(sum(monto),0) as monto from flujo where idturno = ?",[caja[0].idcaja],
+											function(err, ft){
+												if(err) throw err;
+									
+											res.render('informe_turno', {page_title: "Informe de Ventas", login_admin: req.session.login_admin, data: inf, data2: granel,caja: caja[0] , flujo: ft[0].monto});			
+									});
+								});
+							});
+			});*/
+	});
+}
+
+
+
+exports.render_hist = function(req, res){
+	var input = req.params;
+	console.log(input);
+	req.getConnection(function(err, connection){
+		if(err)
+			console.log("Error Connection : %s", err);
+		connection.query("SELECT caja.*,vendedor.nombreVendedor as nombre FROM caja left join vendedor on caja.codturno=vendedor.rutVendedor  WHERE caja.idcaja = ?",[input.idcaja] ,function(err, caja){
+				if(err) throw err;
+				console.log(caja);
+				connection.query("SELECT info.codigo_producto, info.fecha, info.precio AS precio_u, producto.nombre, SUM(info.cantidad) as total"
+						+"  FROM (SELECT ventaproducto.*, venta.fecha FROM ventaproducto LEFT JOIN venta ON ventaproducto.id_venta = venta.id_venta WHERE venta.rut_vendedor = ? AND venta.pago = 'Efectivo' AND venta.fecha BETWEEN '"+caja[0].fecha+"' AND '"+caja[0].fechafin+"' ORDER BY ventaproducto.codigo_producto) as info "
+						+"LEFT JOIN producto ON info.codigo_producto = producto.id_producto WHERE producto.tipo='unidad' GROUP BY info.codigo_producto", [caja[0].codturno ], function(err, inf){
+							if(err) throw err;
+							//console.log(inf);
+							connection.query("select ventaproducto.codigo_producto, venta.fecha, producto.nombre, ventaproducto.cantidad as total,sum(ventaproducto.precio) as precio_u from ventaproducto left join venta on ventaproducto.id_venta=venta.id_venta left join producto "
+								+"on producto.id_producto = ventaproducto.codigo_producto where venta.rut_vendedor = ? and venta.pago = 'Efectivo' and producto.tipo='granel' "
+								+"AND venta.fecha  BETWEEN '"+caja[0].fecha+"' AND '"+caja[0].fechafin+"' group by ventaproducto.codigo_producto", [input.idturno, input.fecha], function(err, granel){
+									if(err) throw err;
+									connection.query("select coalesce(sum(monto),0) as monto from flujo where idturno = ?",[caja[0].idcaja],
+											function(err, ft){
+												if(err) throw err;
+									
+											res.render('informe_turno_history', { data: inf, data2: granel,caja: caja[0] , flujo: ft[0].monto});			
+									});
+								});
+							});
+			});
+	});
+}
+

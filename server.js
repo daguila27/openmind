@@ -223,6 +223,14 @@ app.post('/cajaQuery', sale.cajaQuery);
 
 app.get('/inf_turno', sale.informeTurno);
 
+
+app.get('/hist_caja', sale.histCaja);
+
+app.post('/list_hist', sale.list_hist);
+app.get('/render_hist/:idcaja', sale.render_hist);
+
+
+
 app.post('/quitar_saldo', sale.quitarSaldo);
 
 app.get('/flujo_turno/:idturno', sale.flujoTurno);

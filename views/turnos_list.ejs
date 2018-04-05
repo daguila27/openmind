@@ -1,0 +1,30 @@
+<%if(turnos.length){%>
+<div class="list-group">
+	<%for(var t=0; t < turnos.length; t++){%>
+  		<a class="list-group-item optiont" data-id="<%= turnos[t].idcaja%>"  data-dismiss="modal" style="display: flex;">
+  			<h3 style="width: 75%; margin-top: 10px"><%=turnos[t].nombreVendedor%></h3>
+  			<p style="width: 25%">
+				Inicial: $<%= turnos[t].monto%>
+				<br>
+  				Final: $<%= turnos[t].final%>		
+  			</p>	
+  		</a>
+  	<%}%>
+</div>
+
+<%}else{%>
+	<h2 style="text-align: center;">No hay turnos</h2>
+<%}%>
+
+<script type="text/javascript">
+	$(".optiont").on('click', function(e){
+		e.preventDefault();
+		$.ajax({
+			type: 'GET',
+			url: '/render_hist/'+$(this).data('id'),
+			success: function(data){
+				$(".contenedor-flujo").html(data);
+			}
+		});
+	});
+</script>
