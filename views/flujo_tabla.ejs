@@ -1,3 +1,7 @@
+  
+<%function letraMayus(string){
+      return string.substring(0,1).toUpperCase()+string.substring(1,string.length).toLowerCase();
+  }%>
               <table class="table table-striped">
                       <thead>
                           <tr>
@@ -5,7 +9,7 @@
                               <th>Monto</th>
                               <th>Tipo</th>
                               <th>Instante</th>
-                              <th>Anular</th>
+                              <!--<th>Anular</th>-->
                           </tr>
                       </thead>
                       <tbody>
@@ -14,7 +18,7 @@
                             total += flujo[y].monto;
                           %>
                             <tr>
-                              <td><%= flujo[y].detalle%></td>
+                              <td><%= letraMayus(flujo[y].detalle)%></td>
                               <td class="montof" data-pla="<%=flujo[y].monto%>">$<%= Math.abs(flujo[y].monto)%></td>
                               <td>
                                 <%if(flujo[y].monto < 0){%>
@@ -24,9 +28,9 @@
                                 <%}%>
                               </td>
                               <td><%= flujo[y].inst.toLocaleString()%></td>
-                              <td>
+                              <!--<td>
                                 <button class="btn btn-success null-fluid" data-id="<%= flujo[y].idflujo%>" data-mon="<%= flujo[y].monto%>" >Anular</button>
-                              </td>
+                              </td>-->
                             </tr>
                           <%}%>
                       </tbody>

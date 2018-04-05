@@ -4,6 +4,10 @@
 else{%>
   <%- include layouts/user_header.ejs%>
 <%}%>
+
+<%function letraMayus(string){
+      return string.substring(0,1).toUpperCase()+string.substring(1,string.length).toLowerCase();
+  }%>
 <style type="text/css">
   .list-group-item:hover {
     background-color: #f5f5f5;
@@ -29,7 +33,7 @@ else{%>
         <div class="modal-body">    
                 <div class="input-group">
                   <span class="input-group-addon">$</span>
-                  <input id="monto-menos" type="number" class="form-control" placeholder="Ingrese monto">
+                  <input id="monto-menos" type="number" class="form-control" placeholder="Ingrese monto" min="0">
                 </div>     
                 <div>
                   <label for="detalle">Ingrese detalle: </label>
@@ -45,6 +49,42 @@ else{%>
 </div><!-- /.modal -->
 
 
+
+<div class="modal fade" id="add-saldo" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span  aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title">Agregar saldo: </h4>
+        </div>
+            
+        <div class="modal-body">    
+                <div class="input-group">
+                  <span class="input-group-addon">$</span>
+                  <input id="monto-mas" type="number" class="form-control" placeholder="Ingrese monto" min="0">
+                </div>     
+                <div>
+                  <label for="detalle">Ingrese detalle: </label>
+                  <textarea id="detflujo2" style="width: 100%" rows="4" cols="50"></textarea>
+                </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary add-saldo" data-dismiss="modal">Enviar</button>
+        </div><!-- /.modal -->
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+<style type="text/css">
+  .flu-options > button{
+    padding: 5%;
+  }
+  .flu-options > button i{
+    font-size: 150%;
+  }
+</style>
 <h1 class="page-header">Informe de ventas diario:</h1>
  
 <div class="row">
@@ -56,12 +96,17 @@ else{%>
               <div class="panel panel-danger">
                   <div class="panel-heading" style="display: flex;">
                       <h1 style="width: 80%">Turno: <%= caja.nombre%></h1>
-                      <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#quitar-saldo">Quitar saldo</button>
+                      <div class="flu-options">
+                        <button style="width: 100%" type="button" class="btn btn-primary"  data-toggle="modal" data-target="#add-saldo"><i class="glyphicon glyphicon-arrow-right"></i> <i class="fa fa-money"></i></button>
+                        <button style="width: 100%" type="button" class="btn btn-primary" data-toggle="modal" data-target="#quitar-saldo"><i class="glyphicon glyphicon-arrow-left"></i> <i class="fa fa-money"></i></button>
+                      </div>
                       <button type="submit" class="btn btn-success cerrar-turno">Cerrar Turno</button>
                   </div>
                   <div class="panel-body" style="display: flex;">
                       <div class="panelitem"><p><strong>Monto Inicial:</strong></p><p class="cash-inicial"  style="margin-top: 5px">$<%= caja.monto%></p></div>
-                      <div class="panelitem"><p><strong>Diferencia: </strong></p><p class="cash" style="margin-top: 5px"></p></div>
+                      <div class="panelitem"><p><strong>Ventas: </strong></p><p class="cash" style="margin-top: 5px"></p></div>
+                      <div class="panelitem"><p><strong>Total flujo: </strong></p><p class="cash-flujo" style="margin-top: 5px"></p></div>
+                      
                       <div class="panelitem"><p><strong>Monto Final: </strong></p><p class="cash-final" style="margin-top: 5px"></p></div>
                   </div>
               </div>
@@ -75,7 +120,7 @@ else{%>
         <h2>Flujo de caja</h2>
 
         <div class="panelitem" style="margin-top: 10px; margin-left: 5%"><p><strong>Total:</strong></p><p class="div-flujo" style="margin-top: 2px">$
-        <%=parseInt(flujo)*parseInt(-1)%></p></div>
+        <%=flujo%></p></div>
       </div>
     <div class="collapse panel-body" id="flujo"> 
       <div class="table-responsive tabla-flujo">
@@ -107,7 +152,7 @@ else{%>
                   var lastId = data.length;
                   for(var i=0; i < data.length; i++){%>
                     <tr class="fila unidad" id="fila<%=i%>">
-                      <td><%= data[i].nombre%></td>
+                      <td><%= letraMayus(data[i].nombre)%></td>
                       <td class="cant" data-cant="<%=data[i].total%>" ><%= data[i].total%></td>  
                       <td class="precio_u" data-precio="<%= data[i].precio_u%>">$<%= data[i].precio_u%></td>
                       <td class="precio_t"></td>
@@ -134,7 +179,7 @@ else{%>
                     </tr>
                     <%for(var i=0; i < data2.length; i++){%>
                       <tr class="fila granel" id="fila<%=i+lastId%>">
-                        <td><%= data2[i].nombre%></td>
+                        <td><%= letraMayus(data2[i].nombre)%></td>
                         <td style="display: none" class="cant" data-cant="<%=data2[i].total%>" ><%= data2[i].total%></td>  
                         <td style="display: none" class="precio_u" data-precio="<%= data2[i].precio_u%>">$<%= data2[i].precio_u%></td>
                         <td class="precio_t"></td>
@@ -158,7 +203,8 @@ else{%>
 
 <script type="text/javascript">
     function recalcular(monto, dif, fl){
-      $(".div-flujo").html("$ "+fl);
+      $(".div-flujo").html("$ "+(fl*-1) );
+      $(".cash-flujo").html("$ "+(fl*-1) );
       $(".cash-inicial").html("$"+monto);
       $(".cash-final").html("$"+parseInt(monto + dif - fl).toString());
       $("#gan-input").val(dif);
@@ -229,6 +275,21 @@ else{%>
           success: function(data){
             render_flujotabla($("#idcaja").val());
             refrescar_all($("#monto-menos").val());
+            
+          }
+        });
+    });
+   
+
+   $(".add-saldo").on('click', function(e){
+        //e.preventDefault();
+        $.ajax({
+          type: 'POST',
+          data: {idcaja: $("#idcaja").val(), monto: $("#monto-mas").val()*-1, detalle: $("#detflujo2").val()},
+          url: '/quitar_saldo',
+          success: function(data){
+            render_flujotabla($("#idcaja").val());
+            refrescar_all($("#monto-mas").val()*-1);
             
           }
         });
